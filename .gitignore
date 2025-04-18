@@ -1,0 +1,16 @@
+# Diretório do cache de build
+/build/
+tmp/
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDEs
+.vscode/
+.idea/
+*.swp
+
+# Variáveis de ambiente
+.env

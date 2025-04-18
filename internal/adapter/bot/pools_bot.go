@@ -1,0 +1,89 @@
+package bot
+
+import (
+	"context"
+	"log"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+
+	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/usecase"
+)
+
+type PoolsBot struct {
+	adapter                *TelegramAdapter
+	listActivePoolsUseCase *usecase.ListActivePools
+	getPoolFeesUseCase     *usecase.GetPoolFees
+}
+
+func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *usecase.ListActivePools, getPoolFeesUseCase *usecase.GetPoolFees) *PoolsBot {
+	return &PoolsBot{
+		adapter:                adapter,
+		listActivePoolsUseCase: listActivePoolsUseCase,
+		getPoolFeesUseCase:     getPoolFeesUseCase,
+	}
+}
+
+func (pb *PoolsBot) Start() error {
+	log.Println("Starting PoolsBot")
+	updates, err := pb.adapter.HandleUpdates()
+	if err != nil {
+		return err
+	}
+
+	for update := range updates {
+		if update.Message.IsCommand() {
+			pb.processCommand(update)
+		} else {
+			pb.adapter.SendMessage(update.Message.Chat.ID, "Comando inválido.")
+		}
+	}
+
+	return nil
+}
+
+func (pb *PoolsBot) processCommand(update tgbotapi.Update) {
+	command := update.Message.Command()
+	args := update.Message.CommandArguments()
+	chatID := update.Message.Chat.ID
+
+	var response string
+
+	switch command {
+	case constants.StartCommand:
+		response = "Olá! Eu sou o PoolsBot, um bot para gerenciar suas contas."
+	case constants.PoolsCommand:
+		response = pb.handlePools(args)
+	case constants.FeesCommand:
+		response = pb.handleFees(args)
+	default:
+		response = "Comando desconhecido."
+	}
+
+	pb.adapter.SendMessage(chatID, response)
+}
+
+func (pb *PoolsBot) handlePools(msg string) string {
+	ctx := context.Background()
+	response, err := pb.listActivePoolsUseCase.Execute(ctx)
+	if err != nil {
+		return err.Error()
+	}
+
+	return response
+}
+
+func (pb *PoolsBot) handleFees(msg string) string {
+	ctx := context.Background()
+	response, err := pb.getPoolFeesUseCase.Execute(ctx)
+	if err != nil {
+		return err.Error()
+	}
+
+	return response
+}
+
+func (pb *PoolsBot) SendMessage(chatID int64, message string) error {
+	err := pb.adapter.SendMessage(chatID, message)
+	return err
+}
