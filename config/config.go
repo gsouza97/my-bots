@@ -14,6 +14,7 @@ type Config struct {
 	MongoURI             string
 	BotChatID            string
 	NotificationCooldown string
+	MongoDBName          string
 }
 
 func LoadConfig() *Config {
@@ -28,5 +29,6 @@ func LoadConfig() *Config {
 		MongoURI:             os.Getenv("MONGO_URI"),
 		BotChatID:            os.Getenv("TELEGRAM_CHAT_ID"),
 		NotificationCooldown: os.Getenv("TELEGRAM_NOTIFICATION_COOLDOWN_SECONDS"),
+		MongoDBName:          os.Getenv("MONGO_DB_NAME"),
 	}
 }

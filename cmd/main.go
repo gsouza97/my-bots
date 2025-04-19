@@ -29,7 +29,7 @@ func main() {
 	defer client.Disconnect(context.Background())
 
 	// DB
-	db := client.Database("expenses-test")
+	db := client.Database(cfg.MongoDBName)
 
 	// Repositories
 	billRepo := repository.NewBillRepository(db)
