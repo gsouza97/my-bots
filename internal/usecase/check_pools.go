@@ -100,7 +100,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 		}
 
 		message := helper.BuildRangeMessage(pool, outOfRange, price)
-		cp.notifier.SendMessage(0, message)
+		cp.notifier.SendMessage(message)
 	}
 
 	if !outOfRange {
@@ -118,7 +118,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 				maxWarningMessage := true
 				diffToMax := price * percentToMax
 				msgMax := helper.BuildWarningMessage(pool, price, percentToMax, diffToMax, maxWarningMessage)
-				cp.notifier.SendMessage(0, msgMax)
+				cp.notifier.SendMessage(msgMax)
 				pool.LastNotificationTime = time.Now()
 				cp.poolRepository.Update(ctx, pool)
 			}
@@ -127,7 +127,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 				maxWarningMessage := false
 				diffToMin := price * percentToMin
 				msgMin := helper.BuildWarningMessage(pool, price, percentToMax, diffToMin, maxWarningMessage)
-				cp.notifier.SendMessage(0, msgMin)
+				cp.notifier.SendMessage(msgMin)
 				pool.LastNotificationTime = time.Now()
 				cp.poolRepository.Update(ctx, pool)
 			}
@@ -138,7 +138,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 		}
 
 		message := helper.BuildFeesToCollectMessage(pool, percentToMax, percentToMin)
-		cp.notifier.SendMessage(0, message)
+		cp.notifier.SendMessage(message)
 	}
 
 	return nil

@@ -84,7 +84,7 @@ func (cpa *CheckPriceAlert) processAlert(ctx context.Context, alert *domain.Pric
 
 	if newAlertStatus != alert.PriceStatus {
 		message := cpa.getAlertPriceMessage(alert, price, newAlertStatus)
-		err := cpa.notifier.SendMessage(0, message)
+		err := cpa.notifier.SendMessage(message)
 		if err != nil {
 			return fmt.Errorf("error sending message: %w", err)
 		}

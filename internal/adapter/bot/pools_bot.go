@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"log"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
@@ -14,13 +15,20 @@ type PoolsBot struct {
 	adapter                *TelegramAdapter
 	listActivePoolsUseCase *usecase.ListActivePools
 	getPoolFeesUseCase     *usecase.GetPoolFees
+	chatID                 int64
 }
 
-func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *usecase.ListActivePools, getPoolFeesUseCase *usecase.GetPoolFees) *PoolsBot {
+func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *usecase.ListActivePools, getPoolFeesUseCase *usecase.GetPoolFees, chatID string) *PoolsBot {
+	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
+	if err != nil {
+		return nil
+	}
+
 	return &PoolsBot{
 		adapter:                adapter,
 		listActivePoolsUseCase: listActivePoolsUseCase,
 		getPoolFeesUseCase:     getPoolFeesUseCase,
+		chatID:                 chatIDInt,
 	}
 }
 
@@ -83,7 +91,7 @@ func (pb *PoolsBot) handleFees(msg string) string {
 	return response
 }
 
-func (pb *PoolsBot) SendMessage(chatID int64, message string) error {
-	err := pb.adapter.SendMessage(chatID, message)
+func (pb *PoolsBot) SendMessage(message string) error {
+	err := pb.adapter.SendMessage(pb.chatID, message)
 	return err
 }

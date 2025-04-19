@@ -54,7 +54,7 @@ func main() {
 	binanceProvider := provider.NewBinancePriceProvider()
 	revertProvider := provider.NewRevertFeeProvider()
 
-	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter)
+	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter, cfg.BotChatID)
 
 	// Use Cases
 	saveUseCase := usecase.NewSaveBill(billRepo)
@@ -64,7 +64,7 @@ func main() {
 	getPoolFeesUseCase := usecase.NewGetPoolFees(poolRepo, revertProvider)
 	generateDailyAlertUseCase := usecase.NewGenerateDailyAlert(getPoolFeesUseCase, priceAlertRepo, binanceProvider, priceAlertsBot)
 
-	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase)
+	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase, cfg.BotChatID)
 	checkPoolsUseCase := usecase.NewCheckPools(poolRepo, binanceProvider, poolsBot, cfg.NotificationCooldown)
 
 	// Bots

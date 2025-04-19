@@ -60,7 +60,7 @@ func (gda *GenerateDailyAlert) Execute() error {
 	dailyAlertMsg = append(dailyAlertMsg, alertsPriceMsgs...)
 	dailyAlertMsg = append(dailyAlertMsg, poolsMsg)
 
-	gda.notifier.SendMessage(0, strings.Join(dailyAlertMsg, "\n"))
+	gda.notifier.SendMessage(strings.Join(dailyAlertMsg, "\n"))
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)
 	}
