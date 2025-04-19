@@ -9,14 +9,14 @@ import (
 )
 
 func BuildPoolResponseMessage(pools []*domain.Pool) string {
-	message := "📌 *Pools Ativas:* \n"
+	message := "📌 Pools Ativas: \n"
 	for _, pool := range pools {
 		poolStatus := "DENTRO"
 		if pool.OutOfRange {
 			poolStatus = "FORA"
 		}
 		message += fmt.Sprintf(
-			"- *%s/%s*:\n  Pool: %s\n  Range: %f - %f  ➡  *%s*\n\n",
+			"- %s/%s:\n  Pool: %s\n  Range: %f - %f  ➡  %s\n\n",
 			pool.Crypto1, pool.Crypto2, pool.Description, pool.MinPrice, pool.MaxPrice, poolStatus,
 		)
 	}
