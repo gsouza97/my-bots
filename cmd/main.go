@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/gsouza97/my-bots/config"
 	"github.com/gsouza97/my-bots/internal/adapter/bot"
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
+	"github.com/gsouza97/my-bots/internal/httpserver"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/internal/scheduler"
@@ -78,15 +78,7 @@ func main() {
 	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase)
 
 	// Health Check server
-	go func() {
-		http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("OK"))
-		})
-		if err := http.ListenAndServe(":8080", nil); err != nil {
-			log.Fatalf("Erro ao iniciar o health check server: %v", err)
-		}
-	}()
+	go httpserver.StartHealthCheckServer()
 
 	// Start
 	go priceAlertsBot.Start()
