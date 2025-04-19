@@ -1,0 +1,16 @@
+# Go stuff
+bin/
+*.exe
+*.test
+*.out
+
+# Git
+.git
+.gitignore
+
+# IDEs
+.vscode/
+.idea/
+
+# Env
+.env
