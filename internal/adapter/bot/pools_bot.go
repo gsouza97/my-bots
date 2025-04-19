@@ -92,6 +92,7 @@ func (pb *PoolsBot) handleFees(msg string) string {
 }
 
 func (pb *PoolsBot) SendMessage(message string) error {
+	log.Printf("Sending message to chat: %d", pb.chatID)
 	err := pb.adapter.SendMessage(pb.chatID, message)
 	return err
 }

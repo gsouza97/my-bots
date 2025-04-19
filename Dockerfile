@@ -11,6 +11,8 @@ RUN go build -o mybots ./cmd/main.go
 
 FROM alpine:latest
 
+RUN apk add --no-cache tzdata
+
 WORKDIR /root/
 
 COPY --from=builder /app/mybots .

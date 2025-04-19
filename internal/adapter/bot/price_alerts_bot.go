@@ -44,6 +44,7 @@ func (pab *PriceAlertsBot) Start() error {
 }
 
 func (pab *PriceAlertsBot) SendMessage(message string) error {
+	log.Printf("Sending message to chat: %d", pab.chatID)
 	err := pab.adapter.SendMessage(pab.chatID, message)
 	return err
 }
