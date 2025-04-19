@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/gsouza97/my-bots/config"
 	"github.com/gsouza97/my-bots/internal/adapter/bot"
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/internal/scheduler"
 	"github.com/gsouza97/my-bots/internal/usecase"
@@ -18,7 +18,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Iniciando o Projeto My Bots")
+	// Inicializa o logger
+	logger.Init()
+	logger.Log.Info("Iniciando o Projeto My Bots")
 
 	cfg := config.LoadConfig()
 
