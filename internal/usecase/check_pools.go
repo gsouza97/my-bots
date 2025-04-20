@@ -112,9 +112,9 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 		cooldown := time.Since(pool.LastNotificationTime).Seconds()
 
 		if cooldown > notificationCooldownFloat {
-			logger.Log.Infof("Risk rate reached. Sending notification.")
 
 			if percentToMax < pool.RiskRate {
+				logger.Log.Infof("Risk rate reached. Sending notification.")
 				maxWarningMessage := true
 				diffToMax := price * percentToMax
 				msgMax := helper.BuildWarningMessage(pool, price, percentToMax, diffToMax, maxWarningMessage)
@@ -124,6 +124,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 			}
 
 			if percentToMin < pool.RiskRate {
+				logger.Log.Infof("Risk rate reached. Sending notification.")
 				maxWarningMessage := false
 				diffToMin := price * percentToMin
 				msgMin := helper.BuildWarningMessage(pool, price, percentToMax, diffToMin, maxWarningMessage)
