@@ -136,9 +136,6 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 			logger.Log.Infof("Skipping notification. Cooldown time not reached yet.")
 			return nil
 		}
-
-		message := helper.BuildFeesToCollectMessage(pool, percentToMax, percentToMin)
-		cp.notifier.SendMessage(message)
 	}
 
 	return nil
