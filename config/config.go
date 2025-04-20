@@ -1,9 +1,9 @@
 package config
 
 import (
-	"log"
 	"os"
 
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -20,7 +20,7 @@ type Config struct {
 func LoadConfig() *Config {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		log.Println("No .env file found. Using production environment variables.")
+		logger.Log.Info("No .env file found. Using production environment variables.")
 	}
 	return &Config{
 		ExpensesBotToken:     os.Getenv("TELEGRAM_EXPENSES_BOT_TOKEN"),

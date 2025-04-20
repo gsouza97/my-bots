@@ -1,8 +1,7 @@
 package scheduler
 
 import (
-	"log"
-
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
@@ -18,7 +17,7 @@ func NewPoolsMonitorScheduler(checkPools *usecase.CheckPools) *PoolsMonitorSched
 }
 
 func (s *PoolsMonitorScheduler) Start() {
-	log.Println("Starting pool monitor scheduler")
+	logger.Log.Info("Starting pool monitor scheduler")
 
 	c := cron.New(cron.WithSeconds())
 
@@ -29,9 +28,9 @@ func (s *PoolsMonitorScheduler) Start() {
 }
 
 func (s *PoolsMonitorScheduler) executeCheckPools() {
-	log.Println("executando check pools")
+	logger.Log.Info("executando check pools")
 	err := s.checkPools.Execute()
 	if err != nil {
-		log.Printf("error executing check pools: %v", err)
+		logger.Log.Errorf("error executing check pools: %v", err)
 	}
 }

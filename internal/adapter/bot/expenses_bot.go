@@ -2,11 +2,11 @@ package bot
 
 import (
 	"context"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
@@ -25,7 +25,7 @@ func NewExpensesBot(adapter *TelegramAdapter, saveUseCase *usecase.SaveBill, gen
 }
 
 func (eb *ExpensesBot) Start() error {
-	log.Println("Starting ExpensesBot")
+	logger.Log.Info("Starting ExpensesBot")
 	updates, err := eb.adapter.HandleUpdates()
 	if err != nil {
 		return err

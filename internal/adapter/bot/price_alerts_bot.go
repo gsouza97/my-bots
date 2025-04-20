@@ -1,11 +1,11 @@
 package bot
 
 import (
-	"log"
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type PriceAlertsBot struct {
@@ -26,7 +26,7 @@ func NewPriceAlertsBot(adapter *TelegramAdapter, chatID string) *PriceAlertsBot 
 }
 
 func (pab *PriceAlertsBot) Start() error {
-	log.Println("Starting PriceAlertsBot")
+	logger.Log.Info("Starting PriceAlertsBot")
 	updates, err := pab.adapter.HandleUpdates()
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (pab *PriceAlertsBot) Start() error {
 }
 
 func (pab *PriceAlertsBot) SendMessage(message string) error {
-	log.Printf("Sending message to chat: %d", pab.chatID)
+	logger.Log.Infof("Sending message to chat: %d", pab.chatID)
 	err := pab.adapter.SendMessage(pab.chatID, message)
 	return err
 }

@@ -2,12 +2,12 @@ package bot
 
 import (
 	"context"
-	"log"
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
@@ -33,7 +33,7 @@ func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *usecase.ListA
 }
 
 func (pb *PoolsBot) Start() error {
-	log.Println("Starting PoolsBot")
+	logger.Log.Info("Starting PoolsBot")
 	updates, err := pb.adapter.HandleUpdates()
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (pb *PoolsBot) handleFees(msg string) string {
 }
 
 func (pb *PoolsBot) SendMessage(message string) error {
-	log.Printf("Sending message to chat: %d", pb.chatID)
+	logger.Log.Infof("Sending message to chat: %d", pb.chatID)
 	err := pb.adapter.SendMessage(pb.chatID, message)
 	return err
 }

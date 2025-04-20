@@ -3,11 +3,11 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
 
@@ -60,7 +60,7 @@ func (cpa *CheckPriceAlert) Execute() error {
 	}
 	wg.Wait()
 	t2 := time.Now()
-	log.Printf("Tempo total para check_price_alert: %s", t2.Sub(t))
+	logger.Log.Infof("Tempo total para check_price_alert: %s", t2.Sub(t))
 
 	select {
 	case err := <-errChannel:
@@ -75,7 +75,7 @@ func (cpa *CheckPriceAlert) processAlert(ctx context.Context, alert *domain.Pric
 	if err != nil {
 		return fmt.Errorf("error getting price for %s: %w", alert.Crypto, err)
 	}
-	log.Printf("price for %s: %f", alert.Crypto, price)
+	logger.Log.Infof("price for %s: %f", alert.Crypto, price)
 
 	newAlertStatus := domain.UnderPrice
 	if price >= alert.AlertPrice {

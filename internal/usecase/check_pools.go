@@ -3,12 +3,12 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
 )
@@ -64,7 +64,7 @@ func (cp *CheckPools) Execute() error {
 	wg.Wait()
 
 	t2 := time.Now()
-	log.Printf("Tempo total check_pools: %s", t2.Sub(t))
+	logger.Log.Infof("Tempo total check_pools: %s", t2.Sub(t))
 
 	select {
 	case err := <-errChannel:
@@ -80,19 +80,19 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 	if err != nil {
 		return fmt.Errorf("error getting price for %s: %w", cryptoPool, err)
 	}
-	log.Printf("price for %s: %f", cryptoPool, price)
+	logger.Log.Infof("price for %s: %f", cryptoPool, price)
 
 	percentToMax := helper.CalculatePercentToMaxPrice(price, pool.MaxPrice)
 	percentToMin := helper.CalculatePercentToMinPrice(price, pool.MinPrice)
 
-	log.Printf("percentToMax: %f", percentToMax)
-	log.Printf("percentToMin: %f", percentToMin)
+	logger.Log.Infof("percentToMax: %f", percentToMax)
+	logger.Log.Infof("percentToMin: %f", percentToMin)
 
 	outOfRange := price > pool.MaxPrice || price < pool.MinPrice
 
 	// Se o status mudou, manda mensagem
 	if pool.OutOfRange != outOfRange {
-		log.Printf("Pool %s out of range: %t", cryptoPool, outOfRange)
+		logger.Log.Infof("Pool %s out of range: %t", cryptoPool, outOfRange)
 		pool.OutOfRange = outOfRange
 		err := cp.poolRepository.Update(ctx, pool)
 		if err != nil {
@@ -112,7 +112,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 		cooldown := time.Since(pool.LastNotificationTime).Seconds()
 
 		if cooldown > notificationCooldownFloat {
-			log.Printf("Risk rate reached. Sending notification.")
+			logger.Log.Infof("Risk rate reached. Sending notification.")
 
 			if percentToMax < pool.RiskRate {
 				maxWarningMessage := true
@@ -133,7 +133,7 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 			}
 
 		} else {
-			log.Printf("Skipping notification. Cooldown time not reached yet.")
+			logger.Log.Infof("Skipping notification. Cooldown time not reached yet.")
 			return nil
 		}
 

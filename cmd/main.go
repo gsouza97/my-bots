@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/gsouza97/my-bots/config"
@@ -26,6 +25,7 @@ func main() {
 
 	client, err := connectMongoDB(cfg.MongoURI)
 	if err != nil {
+		logger.Log.Error("Erro ao conectar ao MongoDB: ", err)
 		panic(err)
 	}
 	defer client.Disconnect(context.Background())
@@ -104,6 +104,6 @@ func connectMongoDB(uri string) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	log.Println("Conectado ao MongoDB com sucesso!")
+	logger.Log.Info("Conectado ao MongoDB com sucesso!")
 	return client, nil
 }

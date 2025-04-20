@@ -1,8 +1,9 @@
 package httpserver
 
 import (
-	"log"
 	"net/http"
+
+	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 func StartHealthCheckServer() {
@@ -12,6 +13,6 @@ func StartHealthCheckServer() {
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatalf("Erro ao iniciar o health check server: %v", err)
+		logger.Log.Fatalf("Erro ao iniciar o health check server: %v", err)
 	}
 }

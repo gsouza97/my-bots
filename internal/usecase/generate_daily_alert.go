@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
 
@@ -43,7 +43,7 @@ func (gda *GenerateDailyAlert) Execute() error {
 			uniqueList = append(uniqueList, alert.Crypto)
 		}
 	}
-	log.Printf("uniqueList: %v", uniqueList)
+	logger.Log.Infof("uniqueList: %v", uniqueList)
 
 	for _, crypto := range uniqueList {
 		price, err := gda.priceProvider.GetPrice(crypto)

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type RevertFeeProvider struct {
@@ -44,7 +44,7 @@ func (rp *RevertFeeProvider) GetFees(ctx context.Context, chain string, nftId st
 		return RevertPoolDataResponse{}, fmt.Errorf("error: invalid response")
 	}
 
-	log.Println("Revert response:", response)
+	logger.Log.Info("Revert response:", response)
 
 	return response.Data, nil
 }

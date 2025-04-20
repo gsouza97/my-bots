@@ -3,12 +3,12 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
 )
@@ -70,7 +70,7 @@ func (gpf *GetPoolFees) execute(ctx context.Context, updateLastFeesAmount bool) 
 	t2 := time.Now()
 
 	tFinal := t2.Sub(t)
-	log.Printf("Tempo total get_pool_fees: %s", tFinal)
+	logger.Log.Infof("Tempo total get_pool_fees: %s", tFinal)
 
 	totalFeesToCollectSum := 0.0
 	feesToCollectMessages := []string{"📌 Fees para coletar:"}
@@ -94,23 +94,23 @@ func (gpf *GetPoolFees) processPool(ctx context.Context, wg *sync.WaitGroup, poo
 
 		data, err := gpf.feesProvider.GetFees(ctx, pool.Chain, pool.NftId)
 		if err != nil {
-			log.Printf("erro ao buscar fees para pool %s: %s", pool.Description, err.Error())
+			logger.Log.Errorf("erro ao buscar fees para pool %s: %s", pool.Description, err.Error())
 			continue
 		}
 
 		totalFeesToCollect, err := helper.CalculateFeesToCollect(data)
 		if err != nil {
-			log.Printf("erro ao calcular fees para pool %s: %s", pool.Description, err.Error())
+			logger.Log.Errorf("erro ao calcular fees para pool %s: %s", pool.Description, err.Error())
 			continue
 		}
 
 		// Atualiza o valor total de fees a coletar no BBDD
 		if updateLastFeesAmount {
-			log.Printf("atualizando lastFeesAmount para pool %s: %.2f", pool.Description, totalFeesToCollect)
+			logger.Log.Infof("atualizando lastFeesAmount para pool %s: %.2f", pool.Description, totalFeesToCollect)
 			pool.LastFeesAmount = totalFeesToCollect
 			err = gpf.poolRepository.Update(ctx, pool)
 			if err != nil {
-				log.Printf("erro ao atualizar fees para pool %s: %s", pool.Description, err.Error())
+				logger.Log.Errorf("erro ao atualizar fees para pool %s: %s", pool.Description, err.Error())
 				continue
 			}
 		}

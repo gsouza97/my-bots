@@ -1,8 +1,7 @@
 package scheduler
 
 import (
-	"log"
-
+	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
@@ -18,7 +17,7 @@ func NewAlertMonitorScheduler(checkPriceAlert *usecase.CheckPriceAlert) *AlertMo
 }
 
 func (s *AlertMonitorScheduler) Start() {
-	log.Println("Starting alert monitor scheduler")
+	logger.Log.Info("Starting alert monitor scheduler")
 
 	c := cron.New(cron.WithSeconds())
 
@@ -29,9 +28,9 @@ func (s *AlertMonitorScheduler) Start() {
 }
 
 func (s *AlertMonitorScheduler) executeCheckPriceAlert() {
-	log.Println("executando check price alert")
+	logger.Log.Info("executando check price alert")
 	err := s.checkPriceAlert.Execute()
 	if err != nil {
-		log.Printf("error executing check price alert: %v", err)
+		logger.Log.Errorf("error executing check price alert: %v", err)
 	}
 }
