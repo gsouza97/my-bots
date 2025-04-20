@@ -50,7 +50,7 @@ func (gda *GenerateDailyAlert) Execute() error {
 		if err != nil {
 			return fmt.Errorf("error getting price for %s: %w", crypto, err)
 		}
-		alertsPriceMsgs = append(alertsPriceMsgs, fmt.Sprintf("📈 %s: %f", crypto, price))
+		alertsPriceMsgs = append(alertsPriceMsgs, fmt.Sprintf("📈 %s: %.4f", crypto, price))
 	}
 
 	poolsMsg, err := gda.getPoolFees.ExecuteAndUpdateLastFees(ctx)
@@ -58,6 +58,7 @@ func (gda *GenerateDailyAlert) Execute() error {
 		return err
 	}
 	dailyAlertMsg = append(dailyAlertMsg, alertsPriceMsgs...)
+	dailyAlertMsg = append(dailyAlertMsg, "\n")
 	dailyAlertMsg = append(dailyAlertMsg, poolsMsg)
 
 	gda.notifier.SendMessage(strings.Join(dailyAlertMsg, "\n"))

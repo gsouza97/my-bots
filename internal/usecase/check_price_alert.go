@@ -108,5 +108,5 @@ func (cpa *CheckPriceAlert) getAlertPriceMessage(alert *domain.PriceAlert, price
 	if newAlertStatus == domain.OverPrice {
 		statusStr = "ACIMA"
 	}
-	return fmt.Sprintf("🚨 ALERTA: %s está %s de %.2f USD! Preço atual: %.2f USD 🚀", alert.Crypto, statusStr, alert.AlertPrice, price)
+	return fmt.Sprintf("🚨 ALERTA: %s está %s de %f USD! Preço atual: %.4f USD.", alert.Crypto, statusStr, alert.AlertPrice, price)
 }
