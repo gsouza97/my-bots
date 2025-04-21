@@ -104,6 +104,8 @@ func (gpf *GetPoolFees) processPool(ctx context.Context, wg *sync.WaitGroup, poo
 			continue
 		}
 
+		feesToCollectVariation := totalFeesToCollect - pool.LastFeesAmount
+
 		// Atualiza o valor total de fees a coletar no BBDD
 		if updateLastFeesAmount {
 			logger.Log.Infof("atualizando lastFeesAmount para pool %s: %.2f", pool.Description, totalFeesToCollect)
@@ -115,7 +117,6 @@ func (gpf *GetPoolFees) processPool(ctx context.Context, wg *sync.WaitGroup, poo
 			}
 		}
 
-		feesToCollectVariation := totalFeesToCollect - pool.LastFeesAmount
 		msg := helper.BuildFeesToCollectMessage(pool, totalFeesToCollect, feesToCollectVariation)
 		messageChannel <- msg
 		totalFeesChannel <- totalFeesToCollect
