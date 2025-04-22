@@ -73,9 +73,9 @@ func main() {
 	expensesBot := bot.NewExpensesBot(telegramExpensesAdapter, saveUseCase, generateReportUseCase)
 
 	// Schedulers
-	alertScheduler := scheduler.NewAlertMonitorScheduler(checkPriceAlertUseCase)
-	dailyAlertScheduler := scheduler.NewDailyAlertScheduler(generateDailyAlertUseCase)
-	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase)
+	alertScheduler := scheduler.NewAlertMonitorScheduler(checkPriceAlertUseCase, cfg.AlertMonitorCron)
+	dailyAlertScheduler := scheduler.NewDailyAlertScheduler(generateDailyAlertUseCase, cfg.DailyAlertCron)
+	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase, cfg.PoolsMonitorCron)
 
 	// Health Check server
 	go httpserver.StartHealthCheckServer()

@@ -8,11 +8,13 @@ import (
 
 type AlertMonitorScheduler struct {
 	checkPriceAlert *usecase.CheckPriceAlert
+	cron            string
 }
 
-func NewAlertMonitorScheduler(checkPriceAlert *usecase.CheckPriceAlert) *AlertMonitorScheduler {
+func NewAlertMonitorScheduler(checkPriceAlert *usecase.CheckPriceAlert, cron string) *AlertMonitorScheduler {
 	return &AlertMonitorScheduler{
 		checkPriceAlert: checkPriceAlert,
+		cron:            cron,
 	}
 }
 
@@ -21,7 +23,7 @@ func (s *AlertMonitorScheduler) Start() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("0 */5 * * * *", s.executeCheckPriceAlert)
+	c.AddFunc(s.cron, s.executeCheckPriceAlert)
 	c.Start()
 
 	select {}

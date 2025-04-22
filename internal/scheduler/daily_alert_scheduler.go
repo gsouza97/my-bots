@@ -10,11 +10,13 @@ import (
 
 type DailyAlertScheduler struct {
 	generateDailyAlert *usecase.GenerateDailyAlert
+	cron               string
 }
 
-func NewDailyAlertScheduler(generateDailyAlert *usecase.GenerateDailyAlert) *DailyAlertScheduler {
+func NewDailyAlertScheduler(generateDailyAlert *usecase.GenerateDailyAlert, cron string) *DailyAlertScheduler {
 	return &DailyAlertScheduler{
 		generateDailyAlert: generateDailyAlert,
+		cron:               cron,
 	}
 }
 
@@ -28,7 +30,7 @@ func (s *DailyAlertScheduler) Start() {
 
 	c := cron.New(cron.WithSeconds(), cron.WithLocation(loc))
 
-	c.AddFunc("0 0 8,15,20 * * *", s.executeDailyAlert)
+	c.AddFunc(s.cron, s.executeDailyAlert)
 	c.Start()
 
 	select {}

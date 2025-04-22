@@ -8,11 +8,13 @@ import (
 
 type PoolsMonitorScheduler struct {
 	checkPools *usecase.CheckPools
+	cron       string
 }
 
-func NewPoolsMonitorScheduler(checkPools *usecase.CheckPools) *PoolsMonitorScheduler {
+func NewPoolsMonitorScheduler(checkPools *usecase.CheckPools, cron string) *PoolsMonitorScheduler {
 	return &PoolsMonitorScheduler{
 		checkPools: checkPools,
+		cron:       cron,
 	}
 }
 
@@ -21,7 +23,7 @@ func (s *PoolsMonitorScheduler) Start() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("0 */10 * * * *", s.executeCheckPools)
+	c.AddFunc(s.cron, s.executeCheckPools)
 	c.Start()
 
 	select {}

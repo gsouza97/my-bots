@@ -15,6 +15,9 @@ type Config struct {
 	BotChatID            string
 	NotificationCooldown string
 	MongoDBName          string
+	DailyAlertCron       string
+	AlertMonitorCron     string
+	PoolsMonitorCron     string
 }
 
 func LoadConfig() *Config {
@@ -30,5 +33,8 @@ func LoadConfig() *Config {
 		BotChatID:            os.Getenv("TELEGRAM_CHAT_ID"),
 		NotificationCooldown: os.Getenv("TELEGRAM_NOTIFICATION_COOLDOWN_SECONDS"),
 		MongoDBName:          os.Getenv("MONGO_DB_NAME"),
+		DailyAlertCron:       os.Getenv("DAILY_ALERT_CRON"),
+		AlertMonitorCron:     os.Getenv("ALERT_MONITOR_CRON"),
+		PoolsMonitorCron:     os.Getenv("POOLS_MONITOR_CRON"),
 	}
 }
