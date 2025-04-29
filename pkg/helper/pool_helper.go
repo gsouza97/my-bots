@@ -41,7 +41,7 @@ func BuildFeesToCollectMessage(pool *domain.Pool, totalFeesToCollect float64, fe
 
 	message := fmt.Sprintf(
 		"\n- Pool: %s\n Status: %s\n Fees para coletar: %.2f USD (%s%.2f)",
-		pool.Description, poolRangeStatus, totalFeesToCollect, arrow, feesToCollectVariation,
+		pool.Description, BoldText(poolRangeStatus), totalFeesToCollect, arrow, feesToCollectVariation,
 	)
 
 	return message

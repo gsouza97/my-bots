@@ -9,6 +9,7 @@ import (
 	"github.com/gsouza97/my-bots/internal/domain"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/pkg/helper"
 )
 
 type CheckPriceAlert struct {
@@ -108,5 +109,5 @@ func (cpa *CheckPriceAlert) getAlertPriceMessage(alert *domain.PriceAlert, price
 	if newAlertStatus == domain.OverPrice {
 		statusStr = "ACIMA"
 	}
-	return fmt.Sprintf("🚨 ALERTA: %s está %s de %f USD! Preço atual: %.4f USD.", alert.Crypto, statusStr, alert.AlertPrice, price)
+	return fmt.Sprintf("🚨 ALERTA: %s está %s de %f USD! Preço atual: %.4f USD.", helper.BoldText(alert.Crypto), helper.BoldText(statusStr), alert.AlertPrice, price)
 }
