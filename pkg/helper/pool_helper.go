@@ -56,9 +56,9 @@ func BuildRangeMessage(pool *domain.Pool, outOfRange bool, price float64) string
 }
 
 func BuildWarningMessage(pool *domain.Pool, price float64, percent float64, diff float64, maxWarningMessage bool) string {
-	message := fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO TOPO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa subir %.2f (%.6f %s) para atingir o topo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
+	message := fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO TOPO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa subir %.2f %% (%.6f %s) para atingir o topo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
 	if !maxWarningMessage {
-		message = fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO MÍNIMO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa baixar %.2f (%.6f %s) para atingir o mínimo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
+		message = fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO MÍNIMO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa baixar %.2f %% (%.6f %s) para atingir o mínimo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
 	}
 	return message
 }
