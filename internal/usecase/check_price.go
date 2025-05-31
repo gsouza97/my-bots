@@ -13,7 +13,7 @@ type CheckPrice struct {
 	priceProvider        domain.CryptoPriceProvider
 }
 
-func NewCheckPriceUseCase(priceAlertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider) *CheckPrice {
+func NewCheckPrice(priceAlertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider) *CheckPrice {
 	return &CheckPrice{
 		priceAlertRepository: priceAlertRepository,
 		priceProvider:        priceProvider,

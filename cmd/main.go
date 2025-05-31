@@ -56,7 +56,8 @@ func main() {
 	binanceProvider := provider.NewBinancePriceProvider()
 	revertProvider := provider.NewRevertFeeProvider()
 
-	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter, cfg.BotChatID)
+	checkPriceUseCase := usecase.NewCheckPrice(priceAlertRepo, binanceProvider)
+	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter, checkPriceUseCase, cfg.BotChatID)
 
 	// Use Cases
 	saveUseCase := usecase.NewSaveBill(billRepo)

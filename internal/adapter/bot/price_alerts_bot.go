@@ -11,19 +11,20 @@ import (
 
 type PriceAlertsBot struct {
 	adapter           *TelegramAdapter
-	checkPriceUseCase usecase.CheckPrice
+	checkPriceUseCase *usecase.CheckPrice
 	chatID            int64
 }
 
-func NewPriceAlertsBot(adapter *TelegramAdapter, chatID string) *PriceAlertsBot {
+func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, chatID string) *PriceAlertsBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil
 	}
 
 	return &PriceAlertsBot{
-		adapter: adapter,
-		chatID:  chatIDInt,
+		adapter:           adapter,
+		checkPriceUseCase: checkPriceUseCase,
+		chatID:            chatIDInt,
 	}
 }
 
