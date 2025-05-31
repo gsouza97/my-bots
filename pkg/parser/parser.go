@@ -63,7 +63,7 @@ func ParseCheckPriceMesage(message string) (string, error) {
 		return "", errors.New("formato inválido. Use /price cripto")
 	}
 
-	description := parts[0]
+	description := strings.ToUpper(parts[0])
 	return description, nil
 }
 
