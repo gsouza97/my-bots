@@ -6,11 +6,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
+	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type PriceAlertsBot struct {
-	adapter *TelegramAdapter
-	chatID  int64
+	adapter           *TelegramAdapter
+	checkPriceUseCase usecase.CheckPrice
+	chatID            int64
 }
 
 func NewPriceAlertsBot(adapter *TelegramAdapter, chatID string) *PriceAlertsBot {
@@ -51,6 +53,7 @@ func (pab *PriceAlertsBot) SendMessage(message string) error {
 
 func (pab *PriceAlertsBot) processCommand(update tgbotapi.Update) {
 	command := update.Message.Command()
+	args := update.Message.CommandArguments()
 	chatID := update.Message.Chat.ID
 
 	var response string
@@ -58,9 +61,20 @@ func (pab *PriceAlertsBot) processCommand(update tgbotapi.Update) {
 	switch command {
 	case constants.StartCommand:
 		response = "Olá! Eu sou o PriceAlertsBot, um bot para te enviar alertas."
+	case constants.PriceCommand:
+		response = pab.handlePrice(args)
 	default:
 		response = "Comando desconhecido."
 	}
 
 	pab.adapter.SendMessage(chatID, response)
+}
+
+func (pab *PriceAlertsBot) handlePrice(msg string) string {
+	response, err := pab.checkPriceUseCase.Execute(msg)
+	if err != nil {
+		return err.Error()
+	}
+
+	return response
 }

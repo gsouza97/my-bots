@@ -8,4 +8,5 @@ const (
 	ReportCommand = "report"
 	PoolsCommand  = "pools"
 	FeesCommand   = "fees"
+	PriceCommand  = "price"
 )

@@ -56,6 +56,17 @@ func ParseMonth(monthStr string) (time.Month, error) {
 	return 0, errors.New("mês inválido")
 }
 
+func ParseCheckPriceMesage(message string) (string, error) {
+	parts := strings.Split(message, " ")
+
+	if len(parts) < 1 {
+		return "", errors.New("formato inválido. Use /price cripto")
+	}
+
+	description := parts[0]
+	return description, nil
+}
+
 func parseAmount(input string) (float64, error) {
 	return strconv.ParseFloat(strings.Replace(input, ",", ".", 1), 64)
 }
