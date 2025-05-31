@@ -40,7 +40,7 @@ func BuildFeesToCollectMessage(pool *domain.Pool, totalFeesToCollect float64, fe
 	}
 
 	message := fmt.Sprintf(
-		"\n- Pool: %s\n Status: %s\n Fees para coletar: %.2f USD (%s%.2f)",
+		"\n- Pool: %s\n Status: %s\n Fees para coletar: %.2f USD (%s%.2f nas últimas 12h)",
 		pool.Description, poolRangeStatus, totalFeesToCollect, arrow, feesToCollectVariation,
 	)
 
@@ -48,17 +48,29 @@ func BuildFeesToCollectMessage(pool *domain.Pool, totalFeesToCollect float64, fe
 }
 
 func BuildRangeMessage(pool *domain.Pool, outOfRange bool, price float64) string {
-	message := fmt.Sprintf("ATENÇÃO: POOL SAIU DO RANGE!\n Pool: %s\n %s/%s\n Preço: %.2f\n Preço fora do range configurado.", pool.Description, pool.Crypto1, pool.Crypto2, price)
+	message := fmt.Sprintf(
+		"ATENÇÃO: POOL SAIU DO RANGE!\n Pool: %s\n %s/%s\n Preço: %.2f\n Preço fora do range configurado.",
+		pool.Description, pool.Crypto1, pool.Crypto2, price,
+	)
 	if !outOfRange {
-		message = fmt.Sprintf("ATENÇÃO: POOL VOLTOU AO RANGE!\n Pool: %s\n %s/%s\n Preço: %.2f\n Preço voltou ao range configurado.", pool.Description, pool.Crypto1, pool.Crypto2, price)
+		message = fmt.Sprintf(
+			"ATENÇÃO: POOL VOLTOU AO RANGE!\n Pool: %s\n %s/%s\n Preço: %.2f\n Preço voltou ao range configurado.",
+			pool.Description, pool.Crypto1, pool.Crypto2, price,
+		)
 	}
 	return message
 }
 
 func BuildWarningMessage(pool *domain.Pool, price float64, percent float64, diff float64, maxWarningMessage bool) string {
-	message := fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO TOPO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa subir %.2f %% (%.6f %s) para atingir o topo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
+	message := fmt.Sprintf(
+		"ATENÇÃO: PREÇO PRÓXIMO AO TOPO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa subir %.2f%% (%.6f %s) para atingir o topo.",
+		pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2,
+	)
 	if !maxWarningMessage {
-		message = fmt.Sprintf("ATENÇÃO: PREÇO PRÓXIMO AO MÍNIMO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa baixar %.2f %% (%.6f %s) para atingir o mínimo.", pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2)
+		message = fmt.Sprintf(
+			"ATENÇÃO: PREÇO PRÓXIMO AO MÍNIMO!\n %s\n %s\n Preço: %.2f\n Margem de Risco: %.2f %%\n Precisa baixar %.2f%% (%.6f %s) para atingir o mínimo.",
+			pool.Description, pool.Crypto1, price, pool.RiskRate*100, percent*100, diff, pool.Crypto2,
+		)
 	}
 	return message
 }
