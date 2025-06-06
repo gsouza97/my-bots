@@ -10,5 +10,5 @@ const (
 	PoolsCommand        = "pools"
 	FeesCommand         = "fees"
 	PriceCommand        = "price"
-	FearAndGreedCommand = "fearAndGreed"
+	FearAndGreedCommand = "fearandgreed"
 )
