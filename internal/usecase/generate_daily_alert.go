@@ -12,14 +12,16 @@ import (
 
 type GenerateDailyAlert struct {
 	getPoolFees     *GetPoolFees
+	getFearAndGreed *GetFearAndGreedIndex
 	alertRepository repository.PriceAlertRepository
 	priceProvider   domain.CryptoPriceProvider
 	notifier        domain.Notifier
 }
 
-func NewGenerateDailyAlert(getPoolFees *GetPoolFees, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *GenerateDailyAlert {
+func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *GenerateDailyAlert {
 	return &GenerateDailyAlert{
 		getPoolFees:     getPoolFees,
+		getFearAndGreed: getFearAndGreed,
 		alertRepository: alertRepository,
 		priceProvider:   priceProvider,
 		notifier:        notifier,
@@ -57,9 +59,17 @@ func (gda *GenerateDailyAlert) Execute() error {
 	if err != nil {
 		return err
 	}
+
+	fearAndGreedMsg, err := gda.getFearAndGreed.Execute()
+	if err != nil {
+		return fmt.Errorf("error getting fear and greed index: %w", err)
+	}
+
 	dailyAlertMsg = append(dailyAlertMsg, alertsPriceMsgs...)
 	dailyAlertMsg = append(dailyAlertMsg, "\n")
 	dailyAlertMsg = append(dailyAlertMsg, poolsMsg)
+	dailyAlertMsg = append(dailyAlertMsg, "\n")
+	dailyAlertMsg = append(dailyAlertMsg, "📌 "+fearAndGreedMsg)
 
 	gda.notifier.SendMessage(strings.Join(dailyAlertMsg, "\n"))
 	if err != nil {

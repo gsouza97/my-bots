@@ -10,21 +10,23 @@ import (
 )
 
 type PriceAlertsBot struct {
-	adapter           *TelegramAdapter
-	checkPriceUseCase *usecase.CheckPrice
-	chatID            int64
+	adapter                *TelegramAdapter
+	checkPriceUseCase      *usecase.CheckPrice
+	getFearAndGreedUseCase *usecase.GetFearAndGreedIndex
+	chatID                 int64
 }
 
-func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, chatID string) *PriceAlertsBot {
+func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, getFearAndGreedUseCase *usecase.GetFearAndGreedIndex, chatID string) *PriceAlertsBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil
 	}
 
 	return &PriceAlertsBot{
-		adapter:           adapter,
-		checkPriceUseCase: checkPriceUseCase,
-		chatID:            chatIDInt,
+		adapter:                adapter,
+		checkPriceUseCase:      checkPriceUseCase,
+		getFearAndGreedUseCase: getFearAndGreedUseCase,
+		chatID:                 chatIDInt,
 	}
 }
 
@@ -64,6 +66,8 @@ func (pab *PriceAlertsBot) processCommand(update tgbotapi.Update) {
 		response = "Olá! Eu sou o PriceAlertsBot, um bot para te enviar alertas."
 	case constants.PriceCommand:
 		response = pab.handlePrice(args)
+	case constants.FearAndGreedCommand:
+		response = pab.handleFearAndGreed(args)
 	default:
 		response = "Comando desconhecido."
 	}
@@ -73,6 +77,15 @@ func (pab *PriceAlertsBot) processCommand(update tgbotapi.Update) {
 
 func (pab *PriceAlertsBot) handlePrice(msg string) string {
 	response, err := pab.checkPriceUseCase.Execute(msg)
+	if err != nil {
+		return err.Error()
+	}
+
+	return response
+}
+
+func (pab *PriceAlertsBot) handleFearAndGreed(msg string) string {
+	response, err := pab.getFearAndGreedUseCase.Execute()
 	if err != nil {
 		return err.Error()
 	}
