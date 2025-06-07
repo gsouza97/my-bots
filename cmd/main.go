@@ -56,10 +56,12 @@ func main() {
 	binanceProvider := provider.NewBinancePriceProvider()
 	revertProvider := provider.NewRevertFeeProvider()
 	fearAndGreedProvider := provider.NewAlternativeFearAndGreedProvider()
-	fearAndGreedUseCase := usecase.NewGetFearAndGreedIndex(fearAndGreedProvider)
+	altcoinSeasonProvider := provider.NewCmcAltcoinSeasonProvider()
 
+	fearAndGreedUseCase := usecase.NewGetFearAndGreedIndex(fearAndGreedProvider)
+	getAltcoinSeasonUseCase := usecase.NewGetAltcoinSeasonIndex(altcoinSeasonProvider)
 	checkPriceUseCase := usecase.NewCheckPrice(priceAlertRepo, binanceProvider)
-	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter, checkPriceUseCase, fearAndGreedUseCase, cfg.BotChatID)
+	priceAlertsBot := bot.NewPriceAlertsBot(telegramPriceAlertsAdapter, checkPriceUseCase, fearAndGreedUseCase, getAltcoinSeasonUseCase, cfg.BotChatID)
 
 	// Use Cases
 	saveUseCase := usecase.NewSaveBill(billRepo)
@@ -67,7 +69,7 @@ func main() {
 	checkPriceAlertUseCase := usecase.NewCheckPriceAlert(priceAlertRepo, binanceProvider, priceAlertsBot)
 	listActivePoolsUseCase := usecase.NewListActivePools(poolRepo)
 	getPoolFeesUseCase := usecase.NewGetPoolFees(poolRepo, revertProvider)
-	generateDailyAlertUseCase := usecase.NewGenerateDailyAlert(getPoolFeesUseCase, fearAndGreedUseCase, priceAlertRepo, binanceProvider, priceAlertsBot)
+	generateDailyAlertUseCase := usecase.NewGenerateDailyAlert(getPoolFeesUseCase, fearAndGreedUseCase, getAltcoinSeasonUseCase, priceAlertRepo, binanceProvider, priceAlertsBot)
 
 	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase, cfg.BotChatID)
 	checkPoolsUseCase := usecase.NewCheckPools(poolRepo, binanceProvider, poolsBot, cfg.NotificationCooldown)

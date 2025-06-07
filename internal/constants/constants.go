@@ -1,14 +1,16 @@
 package constants
 
 const (
-	BinanceAPI          = "https://api.binance.com/api/v3/ticker/price?symbol="
-	RevertAPI           = "https://api.revert.finance/v1/positions/"
-	AlternativeAPI      = "https://api.alternative.me/fng/"
-	StartCommand        = "start"
-	SaveCommand         = "save"
-	ReportCommand       = "report"
-	PoolsCommand        = "pools"
-	FeesCommand         = "fees"
-	PriceCommand        = "price"
-	FearAndGreedCommand = "fearandgreed"
+	BinanceAPI           = "https://api.binance.com/api/v3/ticker/price?symbol="
+	RevertAPI            = "https://api.revert.finance/v1/positions/"
+	AlternativeAPI       = "https://api.alternative.me/fng/"
+	CmcAltcoinSeasonAPI  = "https://api.coinmarketcap.com/data-api/v3/altcoin-season/chart"
+	StartCommand         = "start"
+	SaveCommand          = "save"
+	ReportCommand        = "report"
+	PoolsCommand         = "pools"
+	FeesCommand          = "fees"
+	PriceCommand         = "price"
+	FearAndGreedCommand  = "fearandgreed"
+	AltcoinSeasonCommand = "altcoinseason"
 )

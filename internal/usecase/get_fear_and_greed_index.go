@@ -23,12 +23,12 @@ func (uc *GetFearAndGreedIndex) Execute() (string, error) {
 		return "", err
 	}
 
-	msg := uc.buildFearAndGreedMessage(data)
+	msg := buildFearAndGreedMessage(data)
 
 	return msg, nil
 }
 
-func (uc *GetFearAndGreedIndex) buildFearAndGreedMessage(data provider.AlternativeFearAndGreedDataResponse) string {
+func buildFearAndGreedMessage(data provider.AlternativeFearAndGreedDataResponse) string {
 	return fmt.Sprintf(
 		"Fear and Greed Index: %s → %s",
 		data.Value, data.ValueClassification,

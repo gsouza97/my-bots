@@ -11,20 +11,22 @@ import (
 )
 
 type GenerateDailyAlert struct {
-	getPoolFees     *GetPoolFees
-	getFearAndGreed *GetFearAndGreedIndex
-	alertRepository repository.PriceAlertRepository
-	priceProvider   domain.CryptoPriceProvider
-	notifier        domain.Notifier
+	getPoolFees      *GetPoolFees
+	getFearAndGreed  *GetFearAndGreedIndex
+	getAltcoinSeason *GetAltcoinSeasonIndex
+	alertRepository  repository.PriceAlertRepository
+	priceProvider    domain.CryptoPriceProvider
+	notifier         domain.Notifier
 }
 
-func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *GenerateDailyAlert {
+func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, getAltcoinSeason *GetAltcoinSeasonIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *GenerateDailyAlert {
 	return &GenerateDailyAlert{
-		getPoolFees:     getPoolFees,
-		getFearAndGreed: getFearAndGreed,
-		alertRepository: alertRepository,
-		priceProvider:   priceProvider,
-		notifier:        notifier,
+		getPoolFees:      getPoolFees,
+		getFearAndGreed:  getFearAndGreed,
+		getAltcoinSeason: getAltcoinSeason,
+		alertRepository:  alertRepository,
+		priceProvider:    priceProvider,
+		notifier:         notifier,
 	}
 }
 
@@ -65,11 +67,18 @@ func (gda *GenerateDailyAlert) Execute() error {
 		return fmt.Errorf("error getting fear and greed index: %w", err)
 	}
 
+	altcoinSeasonMsg, err := gda.getAltcoinSeason.Execute()
+	if err != nil {
+		return fmt.Errorf("error getting altcoin season index: %w", err)
+	}
+
 	dailyAlertMsg = append(dailyAlertMsg, alertsPriceMsgs...)
 	dailyAlertMsg = append(dailyAlertMsg, "\n")
 	dailyAlertMsg = append(dailyAlertMsg, poolsMsg)
 	dailyAlertMsg = append(dailyAlertMsg, "\n")
 	dailyAlertMsg = append(dailyAlertMsg, "📌 "+fearAndGreedMsg)
+	dailyAlertMsg = append(dailyAlertMsg, "\n")
+	dailyAlertMsg = append(dailyAlertMsg, "📌 "+altcoinSeasonMsg)
 
 	gda.notifier.SendMessage(strings.Join(dailyAlertMsg, "\n"))
 	if err != nil {

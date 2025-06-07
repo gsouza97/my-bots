@@ -10,23 +10,25 @@ import (
 )
 
 type PriceAlertsBot struct {
-	adapter                *TelegramAdapter
-	checkPriceUseCase      *usecase.CheckPrice
-	getFearAndGreedUseCase *usecase.GetFearAndGreedIndex
-	chatID                 int64
+	adapter                 *TelegramAdapter
+	checkPriceUseCase       *usecase.CheckPrice
+	getFearAndGreedUseCase  *usecase.GetFearAndGreedIndex
+	getAltcoinSeasonUseCase *usecase.GetAltcoinSeasonIndex
+	chatID                  int64
 }
 
-func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, getFearAndGreedUseCase *usecase.GetFearAndGreedIndex, chatID string) *PriceAlertsBot {
+func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, getFearAndGreedUseCase *usecase.GetFearAndGreedIndex, getAltcoinSeasonUseCase *usecase.GetAltcoinSeasonIndex, chatID string) *PriceAlertsBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil
 	}
 
 	return &PriceAlertsBot{
-		adapter:                adapter,
-		checkPriceUseCase:      checkPriceUseCase,
-		getFearAndGreedUseCase: getFearAndGreedUseCase,
-		chatID:                 chatIDInt,
+		adapter:                 adapter,
+		checkPriceUseCase:       checkPriceUseCase,
+		getFearAndGreedUseCase:  getFearAndGreedUseCase,
+		getAltcoinSeasonUseCase: getAltcoinSeasonUseCase,
+		chatID:                  chatIDInt,
 	}
 }
 
@@ -68,6 +70,8 @@ func (pab *PriceAlertsBot) processCommand(update tgbotapi.Update) {
 		response = pab.handlePrice(args)
 	case constants.FearAndGreedCommand:
 		response = pab.handleFearAndGreed(args)
+	case constants.AltcoinSeasonCommand:
+		response = pab.handleAltcoinSeason(args)
 	default:
 		response = "Comando desconhecido."
 	}
@@ -86,6 +90,15 @@ func (pab *PriceAlertsBot) handlePrice(msg string) string {
 
 func (pab *PriceAlertsBot) handleFearAndGreed(msg string) string {
 	response, err := pab.getFearAndGreedUseCase.Execute()
+	if err != nil {
+		return err.Error()
+	}
+
+	return response
+}
+
+func (pab *PriceAlertsBot) handleAltcoinSeason(msg string) string {
+	response, err := pab.getAltcoinSeasonUseCase.Execute()
 	if err != nil {
 		return err.Error()
 	}
