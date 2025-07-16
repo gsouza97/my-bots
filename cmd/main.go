@@ -37,6 +37,7 @@ func main() {
 	billRepo := repository.NewBillRepository(db)
 	priceAlertRepo := repository.NewPriceAlertRepository(db)
 	poolRepo := repository.NewPoolRepository(db)
+	homologacionRepo := repository.NewHomologacionRepository(db)
 
 	// Adapters
 	telegramExpensesAdapter, err := bot.NewTelegramAdapter(cfg.ExpensesBotToken)
@@ -51,12 +52,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	telegramHomologacionAdapter, err := bot.NewTelegramAdapter(cfg.HomologacionBotToken)
+	if err != nil {
+		panic(err)
+	}
 
 	// Providers
 	binanceProvider := provider.NewBinancePriceProvider()
 	revertProvider := provider.NewRevertFeeProvider()
 	fearAndGreedProvider := provider.NewAlternativeFearAndGreedProvider()
 	altcoinSeasonProvider := provider.NewCmcAltcoinSeasonProvider()
+	homologacionProvider := provider.NewHomologacionProvider()
 
 	fearAndGreedUseCase := usecase.NewGetFearAndGreedIndex(fearAndGreedProvider)
 	getAltcoinSeasonUseCase := usecase.NewGetAltcoinSeasonIndex(altcoinSeasonProvider)
@@ -71,6 +77,9 @@ func main() {
 	getPoolFeesUseCase := usecase.NewGetPoolFees(poolRepo, revertProvider)
 	generateDailyAlertUseCase := usecase.NewGenerateDailyAlert(getPoolFeesUseCase, fearAndGreedUseCase, getAltcoinSeasonUseCase, priceAlertRepo, binanceProvider, priceAlertsBot)
 
+	homologacionBot := bot.NewHomologacionBot(telegramHomologacionAdapter, cfg.BotChatID)
+	getHomologacionStatusUseCase := usecase.NewGetHomologacionStatus(homologacionProvider, homologacionRepo, homologacionBot)
+
 	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase, cfg.BotChatID)
 	checkPoolsUseCase := usecase.NewCheckPools(poolRepo, binanceProvider, poolsBot, cfg.NotificationCooldown)
 
@@ -81,6 +90,7 @@ func main() {
 	alertScheduler := scheduler.NewAlertMonitorScheduler(checkPriceAlertUseCase, cfg.AlertMonitorCron)
 	dailyAlertScheduler := scheduler.NewDailyAlertScheduler(generateDailyAlertUseCase, cfg.DailyAlertCron)
 	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase, cfg.PoolsMonitorCron)
+	homologacionMonitorScheduler := scheduler.NewHomologacionMonitorScheduler(getHomologacionStatusUseCase, cfg.HomologacionMonitorCron)
 
 	// Health Check server
 	go httpserver.StartHealthCheckServer()
@@ -89,8 +99,10 @@ func main() {
 	go priceAlertsBot.Start()
 	go expensesBot.Start()
 	go poolsBot.Start()
+	go homologacionBot.Start()
 	go dailyAlertScheduler.Start()
 	go poolsMonitorScheduler.Start()
+	go homologacionMonitorScheduler.Start()
 	alertScheduler.Start()
 
 }
