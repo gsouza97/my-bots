@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
@@ -27,37 +28,44 @@ func NewGetHomologacionStatus(homologacionProvider domain.HomologacionProvider, 
 
 func (uc *GetHomologacionStatus) Execute() error {
 	ctx := context.Background()
-	homologacionConfigParams, err := uc.homologacionRepository.FindOne(ctx)
+	homologacionConfigParams, err := uc.homologacionRepository.FindAll(ctx)
 	if err != nil {
 		return err
 	}
 
-	currentStatus := homologacionConfigParams.CurrentStatus
-
-	data, err := uc.homologacionProvider.GetHomologacionStatus(buildParams(homologacionConfigParams))
-	if err != nil {
-		return err
-	}
-	if len(data) == 0 {
-		return fmt.Errorf("nenhum dado retornado do provider")
+	if len(homologacionConfigParams) == 0 {
+		return fmt.Errorf("nenhuma configuração de homologação encontrada")
 	}
 
-	logger.Log.Infof("Homologacion Status: %s", data[0].Estado)
+	for _, homologParams := range homologacionConfigParams {
+		currentStatus := homologParams.CurrentStatus
 
-	msg := buildHomologacionMessage(data, currentStatus)
-	if msg != "" {
-		err := uc.notifier.SendMessage(msg)
+		data, err := uc.homologacionProvider.GetHomologacionStatus(buildParams(homologParams))
 		if err != nil {
-			return fmt.Errorf("error sending notification: %w", err)
+			return err
+		}
+		if len(data) == 0 {
+			return fmt.Errorf("nenhum dado retornado do provider")
+		}
+
+		logger.Log.Infof("Homologacion %s Status: %s", getFirstName(homologParams.Fullname), data[0].Estado)
+
+		msg := buildHomologacionMessage(data, currentStatus, homologParams)
+		if msg != "" {
+			err := uc.notifier.SendMessage(msg)
+			if err != nil {
+				return fmt.Errorf("error sending notification: %w", err)
+			}
 		}
 	}
 	return nil
 }
 
-func buildHomologacionMessage(data provider.HomologacionResponse, currentStatus string) string {
+func buildHomologacionMessage(data provider.HomologacionResponse, currentStatus string, homologParams *domain.HomologacionConfigParams) string {
 	if data[0].Estado != currentStatus {
 		return fmt.Sprintf(
-			"Estado da homologação alterado para: %s",
+			"Homologacao %s:\nEstado da homologação alterado para: %s",
+			getFirstName(homologParams.Fullname),
 			data[0].Estado,
 		)
 	}
@@ -74,4 +82,15 @@ func buildParams(homologacionConfigParams *domain.HomologacionConfigParams) stri
 	values.Set("accesoClave", "true")
 
 	return "?" + values.Encode()
+}
+
+func getFirstName(fullname string) string {
+	if fullname == "" {
+		return ""
+	}
+	parts := strings.Split(fullname, "%20")
+	if len(parts) > 0 {
+		return parts[0]
+	}
+	return fullname
 }
