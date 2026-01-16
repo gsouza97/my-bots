@@ -9,6 +9,7 @@ import (
 )
 
 type PriceAlertRepository interface {
+	FindAll(ctx context.Context) ([]*domain.PriceAlert, error)
 	FindAllByActiveIsTrue(ctx context.Context) ([]*domain.PriceAlert, error)
 	Update(ctx context.Context, alert *domain.PriceAlert) error
 }
@@ -46,4 +47,24 @@ func (r *priceAlertRepository) FindAllByActiveIsTrue(ctx context.Context) ([]*do
 func (r *priceAlertRepository) Update(ctx context.Context, alert *domain.PriceAlert) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": alert.ID}, bson.M{"$set": alert})
 	return err
+}
+
+func (r *priceAlertRepository) FindAll(ctx context.Context) ([]*domain.PriceAlert, error) {
+	var alerts []*domain.PriceAlert
+
+	cursor, err := r.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var alert domain.PriceAlert
+		if err := cursor.Decode(&alert); err != nil {
+			return nil, err
+		}
+		alerts = append(alerts, &alert)
+	}
+
+	return alerts, nil
 }

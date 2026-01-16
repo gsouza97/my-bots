@@ -4,10 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/gsouza97/my-bots/config"
 	"github.com/gsouza97/my-bots/internal/adapter/bot"
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
-	"github.com/gsouza97/my-bots/internal/httpserver"
+	"github.com/gsouza97/my-bots/internal/handlers"
+	"github.com/gsouza97/my-bots/internal/httpserver/routes"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/internal/scheduler"
@@ -29,6 +32,15 @@ func main() {
 		panic(err)
 	}
 	defer client.Disconnect(context.Background())
+
+	router := gin.Default()
+	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+		AllowAllOrigins:  true,
+	}))
 
 	// DB
 	db := client.Database(cfg.MongoDBName)
@@ -82,7 +94,6 @@ func main() {
 
 	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase, cfg.BotChatID)
 	checkPoolsUseCase := usecase.NewCheckPools(poolRepo, binanceProvider, poolsBot, cfg.NotificationCooldown)
-
 	// Bots
 	expensesBot := bot.NewExpensesBot(telegramExpensesAdapter, saveUseCase, generateReportUseCase)
 
@@ -92,8 +103,19 @@ func main() {
 	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase, cfg.PoolsMonitorCron)
 	homologacionMonitorScheduler := scheduler.NewHomologacionMonitorScheduler(getHomologacionStatusUseCase, cfg.HomologacionMonitorCron)
 
-	// Health Check server
-	go httpserver.StartHealthCheckServer()
+	// API Usecases
+	alertsUseCase := usecase.NewAlertsUseCase(priceAlertRepo)
+
+	// Handlers
+	alertsHandler := handlers.NewAlertsHandler(alertsUseCase)
+
+	// Routes
+	alertRoutes := routes.NewAlertsRoutes(alertsHandler)
+
+	// Servers
+	alertRoutes.StartAlertsRoutes(router)
+	routes.StartHealthRoutes(router)
+	go router.Run(":8080")
 
 	// Start
 	go priceAlertsBot.Start()
