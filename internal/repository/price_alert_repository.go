@@ -5,6 +5,7 @@ import (
 
 	"github.com/gsouza97/my-bots/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -71,8 +72,13 @@ func (r *priceAlertRepository) FindAll(ctx context.Context) ([]*domain.PriceAler
 }
 
 func (r *priceAlertRepository) FindById(ctx context.Context, id string) (*domain.PriceAlert, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
 	var alert domain.PriceAlert
-	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&alert)
+	err = r.collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&alert)
 	if err != nil {
 		return nil, err
 	}
