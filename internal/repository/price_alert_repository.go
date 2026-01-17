@@ -9,6 +9,7 @@ import (
 )
 
 type PriceAlertRepository interface {
+	FindById(ctx context.Context, id string) (*domain.PriceAlert, error)
 	FindAll(ctx context.Context) ([]*domain.PriceAlert, error)
 	FindAllByActiveIsTrue(ctx context.Context) ([]*domain.PriceAlert, error)
 	Update(ctx context.Context, alert *domain.PriceAlert) error
@@ -67,4 +68,13 @@ func (r *priceAlertRepository) FindAll(ctx context.Context) ([]*domain.PriceAler
 	}
 
 	return alerts, nil
+}
+
+func (r *priceAlertRepository) FindById(ctx context.Context, id string) (*domain.PriceAlert, error) {
+	var alert domain.PriceAlert
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&alert)
+	if err != nil {
+		return nil, err
+	}
+	return &alert, nil
 }
