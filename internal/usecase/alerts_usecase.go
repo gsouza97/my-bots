@@ -38,7 +38,6 @@ func (uc *AlertsUseCase) UpdateAlert(id string, input dto.UpdatePriceAlertInput)
 
 	alert.Crypto = input.Crypto
 	alert.AlertPrice = input.AlertPrice
-	alert.Active = input.Active
 
 	err = uc.priceAlertRepository.Update(ctx, alert)
 	if err != nil {
