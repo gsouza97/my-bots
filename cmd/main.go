@@ -35,10 +35,9 @@ func main() {
 
 	router := gin.Default()
 	router.Use(cors.Default())
-	router.HandleMethodNotAllowed = true
 	router.Use(cors.New(cors.Config{
-		// AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-		// AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "Referer", "User-Agent"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "Referer", "User-Agent"},
 		AllowCredentials: true,
 		AllowAllOrigins:  true,
 	}))
