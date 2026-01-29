@@ -14,6 +14,7 @@ type PriceAlertRepository interface {
 	FindAll(ctx context.Context) ([]*domain.PriceAlert, error)
 	FindAllByActiveIsTrue(ctx context.Context) ([]*domain.PriceAlert, error)
 	Update(ctx context.Context, alert *domain.PriceAlert) error
+	Create(ctx context.Context, alert *domain.PriceAlert) (*domain.PriceAlert, error)
 }
 
 type priceAlertRepository struct {
@@ -49,6 +50,19 @@ func (r *priceAlertRepository) FindAllByActiveIsTrue(ctx context.Context) ([]*do
 func (r *priceAlertRepository) Update(ctx context.Context, alert *domain.PriceAlert) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": alert.ID}, bson.M{"$set": alert})
 	return err
+}
+
+func (r *priceAlertRepository) Create(ctx context.Context, alert *domain.PriceAlert) (*domain.PriceAlert, error) {
+	if alert.ID.IsZero() {
+		alert.ID = primitive.NewObjectID()
+	}
+
+	_, err := r.collection.InsertOne(ctx, alert)
+	if err != nil {
+		return nil, err
+	}
+
+	return alert, nil
 }
 
 func (r *priceAlertRepository) FindAll(ctx context.Context) ([]*domain.PriceAlert, error) {

@@ -104,7 +104,7 @@ func main() {
 	homologacionMonitorScheduler := scheduler.NewHomologacionMonitorScheduler(getHomologacionStatusUseCase, cfg.HomologacionMonitorCron)
 
 	// API Usecases
-	alertsUseCase := usecase.NewAlertsUseCase(priceAlertRepo)
+	alertsUseCase := usecase.NewAlertsUseCase(priceAlertRepo, binanceProvider)
 
 	// Handlers
 	alertsHandler := handlers.NewAlertsHandler(alertsUseCase)

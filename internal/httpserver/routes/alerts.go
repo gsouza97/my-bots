@@ -18,4 +18,5 @@ func NewAlertsRoutes(alertsHandler *handlers.AlertsHandler) *AlertsRoutes {
 func (rt *AlertsRoutes) StartAlertsRoutes(r *gin.Engine) {
 	r.GET("/alerts", rt.alertsHandler.GetAllAlerts)
 	r.PATCH("/alerts/:id", rt.alertsHandler.UpdateAlert)
+	r.POST("/alerts", rt.alertsHandler.CreateAlert)
 }

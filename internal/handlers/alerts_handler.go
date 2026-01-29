@@ -41,9 +41,27 @@ func (h *AlertsHandler) UpdateAlert(c *gin.Context) {
 
 	alert, err := h.alertsUseCase.UpdateAlert(alertID, input)
 	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, alert)
+}
+
+func (h *AlertsHandler) CreateAlert(c *gin.Context) {
+	var input dto.CreatePriceAlertInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	alert, err := h.alertsUseCase.CreateAlert(input)
+	if err != nil {
+		logger.Log.Errorf("Error creating alert:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, alert)
 }
