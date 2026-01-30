@@ -5,22 +5,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gsouza97/my-bots/internal/dto"
+	"github.com/gsouza97/my-bots/internal/httpserver/service"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type AlertsHandler struct {
-	alertsUseCase *usecase.AlertsUseCase
+	alertsService *service.AlertsService
 }
 
-func NewAlertsHandler(alertsUseCase *usecase.AlertsUseCase) *AlertsHandler {
+func NewAlertsHandler(alertsService *service.AlertsService) *AlertsHandler {
 	return &AlertsHandler{
-		alertsUseCase: alertsUseCase,
+		alertsService: alertsService,
 	}
 }
 
 func (h *AlertsHandler) GetAllAlerts(c *gin.Context) {
-	alerts, err := h.alertsUseCase.GetAll()
+	alerts, err := h.alertsService.GetAll()
 	if err != nil {
 		logger.Log.Errorf("Error getting alerts:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get alerts"})
@@ -39,7 +39,7 @@ func (h *AlertsHandler) UpdateAlert(c *gin.Context) {
 		return
 	}
 
-	alert, err := h.alertsUseCase.UpdateAlert(alertID, input)
+	alert, err := h.alertsService.UpdateAlert(alertID, input)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -56,7 +56,7 @@ func (h *AlertsHandler) CreateAlert(c *gin.Context) {
 		return
 	}
 
-	alert, err := h.alertsUseCase.CreateAlert(input)
+	alert, err := h.alertsService.CreateAlert(input)
 	if err != nil {
 		logger.Log.Errorf("Error creating alert:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

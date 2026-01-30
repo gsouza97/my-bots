@@ -1,4 +1,4 @@
-package usecase
+package service
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 	"github.com/gsouza97/my-bots/internal/repository"
 )
 
-type AlertsUseCase struct {
+type AlertsService struct {
 	priceAlertRepository repository.PriceAlertRepository
 	priceProvider        domain.CryptoPriceProvider
 }
 
-func NewAlertsUseCase(priceAlertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider) *AlertsUseCase {
-	return &AlertsUseCase{
+func NewAlertsService(priceAlertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider) *AlertsService {
+	return &AlertsService{
 		priceAlertRepository: priceAlertRepository,
 		priceProvider:        priceProvider,
 	}
 }
 
-func (uc *AlertsUseCase) GetAll() ([]*domain.PriceAlert, error) {
+func (s *AlertsService) GetAll() ([]*domain.PriceAlert, error) {
 	ctx := context.Background()
 
-	alerts, err := uc.priceAlertRepository.FindAll(ctx)
+	alerts, err := s.priceAlertRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +32,9 @@ func (uc *AlertsUseCase) GetAll() ([]*domain.PriceAlert, error) {
 	return alerts, nil
 }
 
-func (uc *AlertsUseCase) UpdateAlert(id string, input dto.UpdatePriceAlertInput) (*domain.PriceAlert, error) {
+func (s *AlertsService) UpdateAlert(id string, input dto.UpdatePriceAlertInput) (*domain.PriceAlert, error) {
 	ctx := context.Background()
-	alert, err := uc.priceAlertRepository.FindById(ctx, id)
+	alert, err := s.priceAlertRepository.FindById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (uc *AlertsUseCase) UpdateAlert(id string, input dto.UpdatePriceAlertInput)
 	alert.Crypto = input.Crypto
 	alert.AlertPrice = input.AlertPrice
 
-	err = uc.priceAlertRepository.Update(ctx, alert)
+	err = s.priceAlertRepository.Update(ctx, alert)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (uc *AlertsUseCase) UpdateAlert(id string, input dto.UpdatePriceAlertInput)
 	return alert, nil
 }
 
-func (uc *AlertsUseCase) CreateAlert(input dto.CreatePriceAlertInput) (*domain.PriceAlert, error) {
+func (uc *AlertsService) CreateAlert(input dto.CreatePriceAlertInput) (*domain.PriceAlert, error) {
 	ctx := context.Background()
 
 	alert := &domain.PriceAlert{

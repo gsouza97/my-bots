@@ -11,6 +11,7 @@ import (
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/handlers"
 	"github.com/gsouza97/my-bots/internal/httpserver/routes"
+	"github.com/gsouza97/my-bots/internal/httpserver/service"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/internal/scheduler"
@@ -103,11 +104,11 @@ func main() {
 	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase, cfg.PoolsMonitorCron)
 	homologacionMonitorScheduler := scheduler.NewHomologacionMonitorScheduler(getHomologacionStatusUseCase, cfg.HomologacionMonitorCron)
 
-	// API Usecases
-	alertsUseCase := usecase.NewAlertsUseCase(priceAlertRepo, binanceProvider)
+	// Services
+	alertsService := service.NewAlertsService(priceAlertRepo, binanceProvider)
 
 	// Handlers
-	alertsHandler := handlers.NewAlertsHandler(alertsUseCase)
+	alertsHandler := handlers.NewAlertsHandler(alertsService)
 
 	// Routes
 	alertRoutes := routes.NewAlertsRoutes(alertsHandler)
