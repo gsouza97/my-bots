@@ -20,6 +20,7 @@ type Config struct {
 	AlertMonitorCron        string
 	PoolsMonitorCron        string
 	HomologacionMonitorCron string
+	UserToken               string
 }
 
 func LoadConfig() *Config {
@@ -40,5 +41,6 @@ func LoadConfig() *Config {
 		AlertMonitorCron:        os.Getenv("ALERT_MONITOR_CRON"),
 		PoolsMonitorCron:        os.Getenv("POOLS_MONITOR_CRON"),
 		HomologacionMonitorCron: os.Getenv("HOMOLOGACION_MONITOR_CRON"),
+		UserToken:               os.Getenv("USER_TOKEN"),
 	}
 }

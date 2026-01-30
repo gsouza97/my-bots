@@ -51,6 +51,7 @@ func main() {
 	priceAlertRepo := repository.NewPriceAlertRepository(db)
 	poolRepo := repository.NewPoolRepository(db)
 	homologacionRepo := repository.NewHomologacionRepository(db)
+	userRepo := repository.NewUserRepository(db)
 
 	// Adapters
 	telegramExpensesAdapter, err := bot.NewTelegramAdapter(cfg.ExpensesBotToken)
@@ -106,16 +107,20 @@ func main() {
 
 	// Services
 	alertsService := service.NewAlertsService(priceAlertRepo, binanceProvider)
+	authService := service.NewAuthService(userRepo, cfg.UserToken)
 
 	// Handlers
 	alertsHandler := handlers.NewAlertsHandler(alertsService)
+	loginHandler := handlers.NewLoginHandler(authService)
 
 	// Routes
 	alertRoutes := routes.NewAlertsRoutes(alertsHandler)
+	loginRoutes := routes.NewLoginRoutes(loginHandler)
 
 	// Servers
 	alertRoutes.StartAlertsRoutes(router)
 	routes.StartHealthRoutes(router)
+	loginRoutes.StartLoginRoutes(router)
 	go router.Run(":8080")
 
 	// Start
