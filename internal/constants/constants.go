@@ -12,6 +12,7 @@ const (
 	PoolsCommand         = "pools"
 	FeesCommand          = "fees"
 	PriceCommand         = "price"
+	LoansCommand         = "loans"
 	FearAndGreedCommand  = "fearandgreed"
 	AltcoinSeasonCommand = "altcoinseason"
 )

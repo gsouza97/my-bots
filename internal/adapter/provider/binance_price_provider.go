@@ -33,7 +33,7 @@ func (bp *BinancePriceProvider) GetPrice(crypto string, others ...string) (float
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return 0, errors.New("erro ao buscar preço na Binance")
+		return 0, errors.New("erro ao buscar preço na Binance para o par " + pair)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -52,4 +52,18 @@ func (bp *BinancePriceProvider) GetPrice(crypto string, others ...string) (float
 	}
 
 	return price, nil
+}
+
+func (bp *BinancePriceProvider) GetMultiplePrices(cryptos []string) (map[string]float64, error) {
+	prices := make(map[string]float64)
+
+	for _, crypto := range cryptos {
+		price, err := bp.GetPrice(crypto)
+		if err != nil {
+			return nil, err
+		}
+		prices[crypto] = price
+	}
+
+	return prices, nil
 }

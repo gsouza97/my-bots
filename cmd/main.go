@@ -52,6 +52,7 @@ func main() {
 	poolRepo := repository.NewPoolRepository(db)
 	homologacionRepo := repository.NewHomologacionRepository(db)
 	userRepo := repository.NewUserRepository(db)
+	loanRepo := repository.NewLoanRepository(db)
 
 	// Adapters
 	telegramExpensesAdapter, err := bot.NewTelegramAdapter(cfg.ExpensesBotToken)
@@ -67,6 +68,10 @@ func main() {
 		panic(err)
 	}
 	telegramHomologacionAdapter, err := bot.NewTelegramAdapter(cfg.HomologacionBotToken)
+	if err != nil {
+		panic(err)
+	}
+	telegramLoansAdapter, err := bot.NewTelegramAdapter(cfg.LoansBotToken)
 	if err != nil {
 		panic(err)
 	}
@@ -90,12 +95,17 @@ func main() {
 	listActivePoolsUseCase := usecase.NewListActivePools(poolRepo)
 	getPoolFeesUseCase := usecase.NewGetPoolFees(poolRepo, revertProvider)
 	generateDailyAlertUseCase := usecase.NewGenerateDailyAlert(getPoolFeesUseCase, fearAndGreedUseCase, getAltcoinSeasonUseCase, priceAlertRepo, binanceProvider, priceAlertsBot)
+	getLoansUseCase := usecase.NewGetLoans(loanRepo, binanceProvider)
 
 	homologacionBot := bot.NewHomologacionBot(telegramHomologacionAdapter, cfg.BotChatID)
 	getHomologacionStatusUseCase := usecase.NewGetHomologacionStatus(homologacionProvider, homologacionRepo, homologacionBot)
 
 	poolsBot := bot.NewPoolsBot(telegramPoolsAdapter, listActivePoolsUseCase, getPoolFeesUseCase, cfg.BotChatID)
 	checkPoolsUseCase := usecase.NewCheckPools(poolRepo, binanceProvider, poolsBot, cfg.NotificationCooldown)
+
+	loansBot := bot.NewLoansBot(telegramLoansAdapter, getLoansUseCase, cfg.BotChatID)
+	checkLoansUseCase := usecase.NewCheckLoans(loanRepo, binanceProvider, loansBot)
+
 	// Bots
 	expensesBot := bot.NewExpensesBot(telegramExpensesAdapter, saveUseCase, generateReportUseCase)
 
@@ -104,6 +114,7 @@ func main() {
 	dailyAlertScheduler := scheduler.NewDailyAlertScheduler(generateDailyAlertUseCase, cfg.DailyAlertCron)
 	poolsMonitorScheduler := scheduler.NewPoolsMonitorScheduler(checkPoolsUseCase, cfg.PoolsMonitorCron)
 	homologacionMonitorScheduler := scheduler.NewHomologacionMonitorScheduler(getHomologacionStatusUseCase, cfg.HomologacionMonitorCron)
+	loansMonitorScheduler := scheduler.NewLoansMonitorScheduler(checkLoansUseCase, cfg.LoansMonitorCron)
 
 	// Services
 	alertsService := service.NewAlertsService(priceAlertRepo, binanceProvider)
@@ -131,6 +142,8 @@ func main() {
 	go dailyAlertScheduler.Start()
 	go poolsMonitorScheduler.Start()
 	go homologacionMonitorScheduler.Start()
+	go loansMonitorScheduler.Start()
+	go loansBot.Start()
 	alertScheduler.Start()
 
 }

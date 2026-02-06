@@ -12,6 +12,7 @@ type Config struct {
 	PriceAlertsBotToken     string
 	PoolsBotToken           string
 	HomologacionBotToken    string
+	LoansBotToken           string
 	MongoURI                string
 	BotChatID               string
 	NotificationCooldown    string
@@ -20,6 +21,7 @@ type Config struct {
 	AlertMonitorCron        string
 	PoolsMonitorCron        string
 	HomologacionMonitorCron string
+	LoansMonitorCron        string
 	UserToken               string
 }
 
@@ -33,6 +35,7 @@ func LoadConfig() *Config {
 		PriceAlertsBotToken:     os.Getenv("TELEGRAM_PRICE_ALERTS_BOT_TOKEN"),
 		PoolsBotToken:           os.Getenv("TELEGRAM_POOLS_BOT_TOKEN"),
 		HomologacionBotToken:    os.Getenv("TELEGRAM_HOMOLOGACION_BOT_TOKEN"),
+		LoansBotToken:           os.Getenv("TELEGRAM_LOANS_BOT_TOKEN"),
 		MongoURI:                os.Getenv("MONGO_URI"),
 		BotChatID:               os.Getenv("TELEGRAM_CHAT_ID"),
 		NotificationCooldown:    os.Getenv("TELEGRAM_NOTIFICATION_COOLDOWN_SECONDS"),
@@ -41,6 +44,7 @@ func LoadConfig() *Config {
 		AlertMonitorCron:        os.Getenv("ALERT_MONITOR_CRON"),
 		PoolsMonitorCron:        os.Getenv("POOLS_MONITOR_CRON"),
 		HomologacionMonitorCron: os.Getenv("HOMOLOGACION_MONITOR_CRON"),
+		LoansMonitorCron:        os.Getenv("LOANS_MONITOR_CRON"),
 		UserToken:               os.Getenv("USER_TOKEN"),
 	}
 }
