@@ -120,22 +120,26 @@ func main() {
 	alertsService := service.NewAlertsService(priceAlertRepo, binanceProvider)
 	authService := service.NewAuthService(userRepo, cfg.UserToken)
 	loansService := service.NewLoansService(loanRepo, binanceProvider)
+	poolsService := service.NewPoolsService(poolRepo, binanceProvider)
 
 	// Handlers
 	alertsHandler := handlers.NewAlertsHandler(alertsService)
 	loginHandler := handlers.NewLoginHandler(authService)
 	loansHandler := handlers.NewLoansHandler(loansService)
+	poolsHandler := handlers.NewPoolsHandler(poolsService)
 
 	// Routes
 	alertRoutes := routes.NewAlertsRoutes(alertsHandler)
 	loginRoutes := routes.NewLoginRoutes(loginHandler)
 	loanRoutes := routes.NewLoansRoutes(loansHandler)
+	poolsRoutes := routes.NewPoolsRoutes(poolsHandler)
 
 	// Servers
 	alertRoutes.StartAlertsRoutes(router)
 	routes.StartHealthRoutes(router)
 	loginRoutes.StartLoginRoutes(router)
 	loanRoutes.StartLoansRoutes(router)
+	poolsRoutes.StartPoolsRoutes(router)
 	go router.Run(":8080")
 
 	// Start
