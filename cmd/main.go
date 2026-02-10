@@ -35,7 +35,6 @@ func main() {
 	defer client.Disconnect(context.Background())
 
 	router := gin.Default()
-	router.Use(cors.Default())
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "Referer", "User-Agent"},
