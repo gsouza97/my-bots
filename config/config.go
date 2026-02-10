@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/joho/godotenv"
@@ -23,6 +24,7 @@ type Config struct {
 	HomologacionMonitorCron string
 	LoansMonitorCron        string
 	UserToken               string
+	AllowedOrigins          []string
 }
 
 func LoadConfig() *Config {
@@ -46,5 +48,6 @@ func LoadConfig() *Config {
 		HomologacionMonitorCron: os.Getenv("HOMOLOGACION_MONITOR_CRON"),
 		LoansMonitorCron:        os.Getenv("LOANS_MONITOR_CRON"),
 		UserToken:               os.Getenv("USER_TOKEN"),
+		AllowedOrigins:          strings.Split(strings.TrimSpace(os.Getenv("ALLOWED_ORIGINS")), ","),
 	}
 }
