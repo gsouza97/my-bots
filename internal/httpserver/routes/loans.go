@@ -15,8 +15,8 @@ func NewLoansRoutes(loansHandler *handlers.LoansHandler) *LoansRoutes {
 	}
 }
 
-func (rt *LoansRoutes) StartLoansRoutes(r *gin.Engine) {
-	r.GET("/loans", rt.loansHandler.GetAllLoans)
+func (rt *LoansRoutes) StartLoansRoutes(r *gin.Engine, middleware ...gin.HandlerFunc) {
+	r.GET("/loans", append(middleware, rt.loansHandler.GetAllLoans)...)
 	// r.PATCH("/loans/:id", rt.loansHandler.UpdateLoan)
 	// r.POST("/loans", rt.loansHandler.CreateLoan)
 }

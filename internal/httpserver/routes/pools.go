@@ -15,6 +15,6 @@ func NewPoolsRoutes(poolsHandler *handlers.PoolsHandler) *PoolsRoutes {
 	}
 }
 
-func (rt *PoolsRoutes) StartPoolsRoutes(r *gin.Engine) {
-	r.GET("/pools", rt.poolsHandler.GetAllPools)
+func (rt *PoolsRoutes) StartPoolsRoutes(r *gin.Engine, middleware ...gin.HandlerFunc) {
+	r.GET("/pools", append(middleware, rt.poolsHandler.GetAllPools)...)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/gsouza97/my-bots/internal/adapter/bot"
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/handlers"
+	"github.com/gsouza97/my-bots/internal/httpserver/middleware"
 	"github.com/gsouza97/my-bots/internal/httpserver/routes"
 	"github.com/gsouza97/my-bots/internal/httpserver/service"
 	"github.com/gsouza97/my-bots/internal/logger"
@@ -133,12 +134,15 @@ func main() {
 	loanRoutes := routes.NewLoansRoutes(loansHandler)
 	poolsRoutes := routes.NewPoolsRoutes(poolsHandler)
 
+	// Auth Middleware
+	authMiddleware := middleware.AuthMiddleware(cfg.UserToken)
+
 	// Servers
-	alertRoutes.StartAlertsRoutes(router)
+	alertRoutes.StartAlertsRoutes(router, authMiddleware)
 	routes.StartHealthRoutes(router)
 	loginRoutes.StartLoginRoutes(router)
-	loanRoutes.StartLoansRoutes(router)
-	poolsRoutes.StartPoolsRoutes(router)
+	loanRoutes.StartLoansRoutes(router, authMiddleware)
+	poolsRoutes.StartPoolsRoutes(router, authMiddleware)
 	go router.Run(":8080")
 
 	// Start
