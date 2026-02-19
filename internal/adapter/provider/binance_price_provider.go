@@ -33,7 +33,7 @@ func (bp *BinancePriceProvider) GetPrice(crypto string, others ...string) (float
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return 0, errors.New("erro ao buscar preço na Binance para o par " + pair)
+		return 0, errors.New("erro ao buscar preço na Binance para o par " + pair + ". Status: " + resp.Status + " - URL: " + url)
 	}
 
 	body, err := io.ReadAll(resp.Body)
