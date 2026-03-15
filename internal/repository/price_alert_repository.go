@@ -15,6 +15,7 @@ type PriceAlertRepository interface {
 	FindAllByActiveIsTrue(ctx context.Context) ([]*domain.PriceAlert, error)
 	Update(ctx context.Context, alert *domain.PriceAlert) error
 	Create(ctx context.Context, alert *domain.PriceAlert) (*domain.PriceAlert, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type priceAlertRepository struct {
@@ -97,4 +98,14 @@ func (r *priceAlertRepository) FindById(ctx context.Context, id string) (*domain
 		return nil, err
 	}
 	return &alert, nil
+}
+
+func (r *priceAlertRepository) Delete(ctx context.Context, id string) error {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": objID})
+	return err
 }

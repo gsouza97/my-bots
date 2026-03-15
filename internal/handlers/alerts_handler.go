@@ -65,3 +65,16 @@ func (h *AlertsHandler) CreateAlert(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, alert)
 }
+
+func (h *AlertsHandler) DeleteAlert(c *gin.Context) {
+	alertID := c.Param("id")
+
+	err := h.alertsService.DeleteAlert(alertID)
+	if err != nil {
+		logger.Log.Errorf("Error deleting alert:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Alert deleted successfully"})
+}

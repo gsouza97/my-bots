@@ -19,4 +19,5 @@ func (rt *AlertsRoutes) StartAlertsRoutes(r *gin.Engine, middleware ...gin.Handl
 	r.GET("/alerts", append(middleware, rt.alertsHandler.GetAllAlerts)...)
 	r.PATCH("/alerts/:id", append(middleware, rt.alertsHandler.UpdateAlert)...)
 	r.POST("/alerts", append(middleware, rt.alertsHandler.CreateAlert)...)
+	r.DELETE("/alerts/:id", append(middleware, rt.alertsHandler.DeleteAlert)...)
 }

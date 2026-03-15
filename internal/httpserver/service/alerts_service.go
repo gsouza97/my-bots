@@ -78,3 +78,8 @@ func (uc *AlertsService) CreateAlert(input dto.CreatePriceAlertInput) (*domain.P
 
 	return createdAlert, nil
 }
+
+func (s *AlertsService) DeleteAlert(id string) error {
+	ctx := context.Background()
+	return s.priceAlertRepository.Delete(ctx, id)
+}
