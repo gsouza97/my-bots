@@ -8,6 +8,7 @@ import (
 
 	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
@@ -15,14 +16,14 @@ import (
 type GetHomologacionStatus struct {
 	homologacionProvider   domain.HomologacionProvider
 	homologacionRepository repository.HomologacionRepository
-	notifier               domain.Notifier
+	eventPublisher         domain.EventPublisher
 }
 
-func NewGetHomologacionStatus(homologacionProvider domain.HomologacionProvider, homologacionRepository repository.HomologacionRepository, notifier domain.Notifier) *GetHomologacionStatus {
+func NewGetHomologacionStatus(homologacionProvider domain.HomologacionProvider, homologacionRepository repository.HomologacionRepository, eventPublisher domain.EventPublisher) *GetHomologacionStatus {
 	return &GetHomologacionStatus{
 		homologacionProvider:   homologacionProvider,
 		homologacionRepository: homologacionRepository,
-		notifier:               notifier,
+		eventPublisher:         eventPublisher,
 	}
 }
 
@@ -52,7 +53,8 @@ func (uc *GetHomologacionStatus) Execute() error {
 
 		msg := buildHomologacionMessage(data, currentStatus, homologParams)
 		if msg != "" {
-			err := uc.notifier.SendMessage(msg)
+			event := events.NewHomologacionAlertTriggeredEvent(homologParams.ID.String(), msg)
+			err := uc.eventPublisher.Publish(ctx, event)
 			if err != nil {
 				return fmt.Errorf("error sending notification: %w", err)
 			}

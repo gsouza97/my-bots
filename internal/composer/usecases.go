@@ -35,14 +35,22 @@ type UseCasesComposer struct {
 func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersComposer, adapters *AdaptersComposer, eventPublishing *EventPublishingComposer, cfg *config.Config) *UseCasesComposer {
 	uc := &UseCasesComposer{}
 
-	// ========== Providers de negócio (independentes) ==========
-	// Estes use cases só precisam de providers, sem repos
+	// ==================== LEVEL 1: Use Cases Independentes ====================
+	// Usam apenas providers (sem repos, sem event publisher)
 	uc.GetFearAndGreedIndex = usecase.NewGetFearAndGreedIndex(providers.FearAndGreedProvider)
 	uc.GetAltcoinSeasonIndex = usecase.NewGetAltcoinSeasonIndex(providers.AltcoinSeasonProvider)
 
-	// ========== Bots (que precisam de adapters + outros use cases) ==========
-	// Primeiro criamos o bot de price alerts (ele é usado por outros)
+	// ==================== LEVEL 2: Use Cases Simples ====================
+	// Usam apenas repos + providers (sem event publisher, sem bots)
 	uc.CheckPrice = usecase.NewCheckPrice(repos.PriceAlertRepository, providers.BinancePriceProvider)
+	uc.SaveBill = usecase.NewSaveBill(repos.BillRepository)
+	uc.GenerateReport = usecase.NewGenerateReport(repos.BillRepository)
+	uc.ListActivePools = usecase.NewListActivePools(repos.PoolRepository)
+	uc.GetPoolFees = usecase.NewGetPoolFees(repos.PoolRepository, providers.RevertFeeProvider)
+	uc.GetLoans = usecase.NewGetLoans(repos.LoanRepository, providers.BinancePriceProvider)
+
+	// ==================== LEVEL 3: Bots ====================
+	// Usam adapters + use cases independentes
 	uc.PriceAlertsBot = bot.NewPriceAlertsBot(
 		adapters.TelegramPriceAlertsAdapter,
 		uc.CheckPrice,
@@ -50,45 +58,58 @@ func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersCompos
 		uc.GetAltcoinSeasonIndex,
 		cfg.BotChatID,
 	)
+	uc.ExpensesBot = bot.NewExpensesBot(
+		adapters.TelegramExpensesAdapter,
+		uc.SaveBill,
+		uc.GenerateReport,
+	)
+	uc.PoolsBot = bot.NewPoolsBot(
+		adapters.TelegramPoolsAdapter,
+		uc.ListActivePools,
+		uc.GetPoolFees,
+		cfg.BotChatID,
+	)
+	uc.HomologacionBot = bot.NewHomologacionBot(
+		adapters.TelegramHomologacionAdapter,
+		cfg.BotChatID,
+	)
+	uc.LoansBot = bot.NewLoansBot(
+		adapters.TelegramLoansAdapter,
+		uc.GetLoans,
+		cfg.BotChatID,
+	)
 
-	// ========== Use Cases para Bills ==========
-	uc.SaveBill = usecase.NewSaveBill(repos.BillRepository)
-	uc.GenerateReport = usecase.NewGenerateReport(repos.BillRepository)
-
-	// ========== Use Cases para Price Alerts ==========
+	// ==================== LEVEL 4: Use Cases com Event Publishing ====================
+	// Usam event publisher para notificar via listeners (ex: Telegram)
 	uc.CheckPriceAlert = usecase.NewCheckPriceAlert(
 		repos.PriceAlertRepository,
 		providers.BinancePriceProvider,
 		eventPublishing.EventPublisher,
 	)
-
-	// ========== Bot de Expenses ==========
-	uc.ExpensesBot = bot.NewExpensesBot(adapters.TelegramExpensesAdapter, uc.SaveBill, uc.GenerateReport)
-
-	// ========== Use Cases para Pools ==========
-	uc.ListActivePools = usecase.NewListActivePools(repos.PoolRepository)
-	uc.GetPoolFees = usecase.NewGetPoolFees(repos.PoolRepository, providers.RevertFeeProvider)
-
+	uc.CheckPools = usecase.NewCheckPools(
+		repos.PoolRepository,
+		providers.BinancePriceProvider,
+		eventPublishing.EventPublisher,
+		cfg.NotificationCooldown,
+	)
+	uc.CheckLoans = usecase.NewCheckLoans(
+		repos.LoanRepository,
+		providers.BinancePriceProvider,
+		eventPublishing.EventPublisher,
+	)
+	uc.GetHomologacionStatus = usecase.NewGetHomologacionStatus(
+		providers.HomologacionProvider,
+		repos.HomologacionRepository,
+		eventPublishing.EventPublisher,
+	)
 	uc.GenerateDailyAlert = usecase.NewGenerateDailyAlert(
 		uc.GetPoolFees,
 		uc.GetFearAndGreedIndex,
 		uc.GetAltcoinSeasonIndex,
 		repos.PriceAlertRepository,
 		providers.BinancePriceProvider,
-		uc.PriceAlertsBot,
+		eventPublishing.EventPublisher,
 	)
-
-	uc.PoolsBot = bot.NewPoolsBot(adapters.TelegramPoolsAdapter, uc.ListActivePools, uc.GetPoolFees, cfg.BotChatID)
-	uc.CheckPools = usecase.NewCheckPools(repos.PoolRepository, providers.BinancePriceProvider, uc.PoolsBot, cfg.NotificationCooldown)
-
-	// ========== Use Cases para Homologacion ==========
-	uc.HomologacionBot = bot.NewHomologacionBot(adapters.TelegramHomologacionAdapter, cfg.BotChatID)
-	uc.GetHomologacionStatus = usecase.NewGetHomologacionStatus(providers.HomologacionProvider, repos.HomologacionRepository, uc.HomologacionBot)
-
-	// ========== Use Cases para Loans ==========
-	uc.GetLoans = usecase.NewGetLoans(repos.LoanRepository, providers.BinancePriceProvider)
-	uc.LoansBot = bot.NewLoansBot(adapters.TelegramLoansAdapter, uc.GetLoans, cfg.BotChatID)
-	uc.CheckLoans = usecase.NewCheckLoans(repos.LoanRepository, providers.BinancePriceProvider, uc.LoansBot)
 
 	return uc
 }

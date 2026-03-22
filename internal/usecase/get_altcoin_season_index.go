@@ -28,8 +28,15 @@ func (uc *GetAltcoinSeasonIndex) Execute() (string, error) {
 }
 
 func buildAltcoinSeasonMessage(data provider.CmcAltcoinSeasonIndexResponse) string {
-	return fmt.Sprintf(
-		"Altcoin Season Index: %s → %s",
-		data.AltcoinIndex, data.Name,
-	)
+	if data.Name == "" {
+		return fmt.Sprintf(
+			"Altcoin Season Index: %s",
+			data.AltcoinIndex,
+		)
+	} else {
+		return fmt.Sprintf(
+			"Altcoin Season Index: %s → %s",
+			data.AltcoinIndex, data.Name,
+		)
+	}
 }

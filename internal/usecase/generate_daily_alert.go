@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
@@ -16,17 +17,17 @@ type GenerateDailyAlert struct {
 	getAltcoinSeason *GetAltcoinSeasonIndex
 	alertRepository  repository.PriceAlertRepository
 	priceProvider    domain.CryptoPriceProvider
-	notifier         domain.Notifier
+	eventPublisher   domain.EventPublisher
 }
 
-func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, getAltcoinSeason *GetAltcoinSeasonIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *GenerateDailyAlert {
+func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, getAltcoinSeason *GetAltcoinSeasonIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *GenerateDailyAlert {
 	return &GenerateDailyAlert{
 		getPoolFees:      getPoolFees,
 		getFearAndGreed:  getFearAndGreed,
 		getAltcoinSeason: getAltcoinSeason,
 		alertRepository:  alertRepository,
 		priceProvider:    priceProvider,
-		notifier:         notifier,
+		eventPublisher:   eventPublisher,
 	}
 }
 
@@ -80,9 +81,11 @@ func (gda *GenerateDailyAlert) Execute() error {
 	dailyAlertMsg = append(dailyAlertMsg, "\n")
 	dailyAlertMsg = append(dailyAlertMsg, "📌 "+altcoinSeasonMsg)
 
-	gda.notifier.SendMessage(strings.Join(dailyAlertMsg, "\n"))
+	event := events.NewDailyAlertTriggeredEvent(strings.Join(dailyAlertMsg, "\n"))
+
+	err = gda.eventPublisher.Publish(ctx, event)
 	if err != nil {
-		return fmt.Errorf("error sending message: %w", err)
+		return fmt.Errorf("error publishing event: %w", err)
 	}
 	return nil
 }

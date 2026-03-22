@@ -103,14 +103,14 @@ func NewLoanAlertTriggeredEvent(loanID string, message string) *LoanAlertTrigger
 // HomologacionAlertTriggeredEvent é emitido para alertas de homologação
 type HomologacionAlertTriggeredEvent struct {
 	BaseEvent
-	Status  string
-	Message string
+	HomologacionID string
+	Message        string
 }
 
-func NewHomologacionAlertTriggeredEvent(status string, message string) *HomologacionAlertTriggeredEvent {
+func NewHomologacionAlertTriggeredEvent(homologacionID string, message string) *HomologacionAlertTriggeredEvent {
 	return &HomologacionAlertTriggeredEvent{
-		BaseEvent: NewBaseEvent("HomologacionAlertTriggered", "homologacion"),
-		Status:    status,
-		Message:   message,
+		BaseEvent:      NewBaseEvent("HomologacionAlertTriggered", "homologacion"),
+		HomologacionID: homologacionID,
+		Message:        message,
 	}
 }

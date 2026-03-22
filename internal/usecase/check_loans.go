@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
@@ -13,14 +14,14 @@ import (
 type CheckLoans struct {
 	loanRepository repository.LoanRepository
 	priceProvider  domain.CryptoPriceProvider
-	notifier       domain.Notifier
+	eventPublisher domain.EventPublisher
 }
 
-func NewCheckLoans(loanRepository repository.LoanRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *CheckLoans {
+func NewCheckLoans(loanRepository repository.LoanRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *CheckLoans {
 	return &CheckLoans{
 		loanRepository: loanRepository,
 		priceProvider:  priceProvider,
-		notifier:       notifier,
+		eventPublisher: eventPublisher,
 	}
 }
 
@@ -77,7 +78,10 @@ func (cl *CheckLoans) Execute() error {
 		// Notificar
 		if (loan.LiqLtv - currentLtv) <= loan.AlertRate {
 			msg := helper.BuildLoanWarningMessage(loan, currentLtv)
-			cl.notifier.SendMessage(msg)
+
+			event := events.NewLoanAlertTriggeredEvent(loan.ID.String(), msg)
+
+			cl.eventPublisher.Publish(ctx, event)
 		}
 
 		// Atualizar Base de Dados

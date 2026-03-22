@@ -27,7 +27,6 @@ func NewLocalEventPublisher() *LocalEventPublisher {
 func (lep *LocalEventPublisher) Publish(ctx context.Context, event events.Event) error {
 	lep.mu.RLock()
 	handlers, exists := lep.handlers[event.EventType()]
-	logger.Log.Debugf("Publicando evento: %s (aggregate: %s)", event.EventType(), event.AggregateID())
 	lep.mu.RUnlock()
 
 	if !exists {

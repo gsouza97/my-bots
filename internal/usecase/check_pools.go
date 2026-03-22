@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
@@ -16,15 +17,15 @@ import (
 type CheckPools struct {
 	poolRepository       repository.PoolRepository
 	priceProvider        domain.CryptoPriceProvider
-	notifier             domain.Notifier
+	eventPublisher       domain.EventPublisher
 	notificationCooldown string
 }
 
-func NewCheckPools(poolRepository repository.PoolRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier, notificationCooldown string) *CheckPools {
+func NewCheckPools(poolRepository repository.PoolRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher, notificationCooldown string) *CheckPools {
 	return &CheckPools{
 		poolRepository:       poolRepository,
 		priceProvider:        priceProvider,
-		notifier:             notifier,
+		eventPublisher:       eventPublisher,
 		notificationCooldown: notificationCooldown,
 	}
 }
@@ -100,7 +101,8 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 		}
 
 		message := helper.BuildRangeMessage(pool, outOfRange, price)
-		cp.notifier.SendMessage(message)
+		event := events.NewPoolAlertTriggeredEvent(pool.ID.String(), pool.Description, message)
+		cp.eventPublisher.Publish(ctx, event)
 	}
 
 	if !outOfRange {
@@ -118,7 +120,8 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 				maxWarningMessage := true
 				diffToMax := price * percentToMax
 				msgMax := helper.BuildWarningMessage(pool, price, percentToMax, diffToMax, maxWarningMessage)
-				cp.notifier.SendMessage(msgMax)
+				event := events.NewPoolAlertTriggeredEvent(pool.ID.String(), pool.Description, msgMax)
+				cp.eventPublisher.Publish(ctx, event)
 				pool.LastNotificationTime = time.Now()
 				cp.poolRepository.Update(ctx, pool)
 			}
@@ -128,7 +131,8 @@ func (cp *CheckPools) processPool(ctx context.Context, pool *domain.Pool) error 
 				maxWarningMessage := false
 				diffToMin := price * percentToMin
 				msgMin := helper.BuildWarningMessage(pool, price, percentToMax, diffToMin, maxWarningMessage)
-				cp.notifier.SendMessage(msgMin)
+				event := events.NewPoolAlertTriggeredEvent(pool.ID.String(), pool.Description, msgMin)
+				cp.eventPublisher.Publish(ctx, event)
 				pool.LastNotificationTime = time.Now()
 				cp.poolRepository.Update(ctx, pool)
 			}
