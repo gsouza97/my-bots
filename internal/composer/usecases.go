@@ -32,7 +32,7 @@ type UseCasesComposer struct {
 	CheckPrice            *usecase.CheckPrice
 }
 
-func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersComposer, adapters *AdaptersComposer, cfg *config.Config) *UseCasesComposer {
+func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersComposer, adapters *AdaptersComposer, eventPublishing *EventPublishingComposer, cfg *config.Config) *UseCasesComposer {
 	uc := &UseCasesComposer{}
 
 	// ========== Providers de negócio (independentes) ==========
@@ -59,7 +59,7 @@ func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersCompos
 	uc.CheckPriceAlert = usecase.NewCheckPriceAlert(
 		repos.PriceAlertRepository,
 		providers.BinancePriceProvider,
-		uc.PriceAlertsBot,
+		eventPublishing.EventPublisher,
 	)
 
 	// ========== Bot de Expenses ==========

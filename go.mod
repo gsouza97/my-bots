@@ -12,6 +12,8 @@ require (
 	go.mongodb.org/mongo-driver v1.17.2
 )
 
+require github.com/google/uuid v1.6.0 // indirect
+
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.14.2 // indirect

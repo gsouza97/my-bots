@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
@@ -14,14 +15,14 @@ import (
 type CheckPriceAlert struct {
 	alertRepository repository.PriceAlertRepository
 	priceProvider   domain.CryptoPriceProvider
-	notifier        domain.Notifier
+	eventPublisher  domain.EventPublisher
 }
 
-func NewCheckPriceAlert(alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, notifier domain.Notifier) *CheckPriceAlert {
+func NewCheckPriceAlert(alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *CheckPriceAlert {
 	return &CheckPriceAlert{
 		alertRepository: alertRepository,
 		priceProvider:   priceProvider,
-		notifier:        notifier,
+		eventPublisher:  eventPublisher,
 	}
 }
 
@@ -83,10 +84,16 @@ func (cpa *CheckPriceAlert) processAlert(ctx context.Context, alert *domain.Pric
 	}
 
 	if newAlertStatus != alert.PriceStatus {
-		message := cpa.getAlertPriceMessage(alert, price, newAlertStatus)
-		err := cpa.notifier.SendMessage(message)
+		event := events.NewPriceAlertTriggeredEvent(
+			alert.ID.Hex(),
+			alert.Crypto,
+			price,
+			alert.AlertPrice,
+			string(newAlertStatus),
+		)
+		err := cpa.eventPublisher.Publish(ctx, event)
 		if err != nil {
-			return fmt.Errorf("error sending message: %w", err)
+			return fmt.Errorf("error publishing event: %w", err)
 		}
 		alert.PriceStatus = newAlertStatus
 		err = cpa.updatePriceAlert(ctx, alert, newAlertStatus)
@@ -101,12 +108,4 @@ func (cpa *CheckPriceAlert) updatePriceAlert(ctx context.Context, alert *domain.
 	alert.PriceStatus = alertStatus
 	err := cpa.alertRepository.Update(ctx, alert)
 	return err
-}
-
-func (cpa *CheckPriceAlert) getAlertPriceMessage(alert *domain.PriceAlert, price float64, newAlertStatus domain.AlertPriceStatus) string {
-	statusStr := "ABAIXO"
-	if newAlertStatus == domain.OverPrice {
-		statusStr = "ACIMA"
-	}
-	return fmt.Sprintf("🚨 ALERTA: %s está %s de %f USD! Preço atual: %.4f USD.", alert.Crypto, statusStr, alert.AlertPrice, price)
 }
