@@ -10,6 +10,7 @@ import (
 	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/pkg/helper"
 )
 
 type CheckPriceAlert struct {
@@ -33,6 +34,16 @@ func (cpa *CheckPriceAlert) Execute() error {
 		return err
 	}
 
+	assetsList := helper.ExtractPriceAlertsAssets(alerts)
+	logger.Log.Infof("Unique cryptos in price alerts: %v", assetsList)
+
+	assetsPrices, err := cpa.priceProvider.GetMultiplePrices(assetsList)
+	if err != nil {
+		return err
+	}
+
+	logger.Log.Infof("Assets prices: %v", assetsPrices)
+
 	numWorkers := 8
 	alertChannel := make(chan *domain.PriceAlert, numWorkers)
 	errChannel := make(chan error, 1)
@@ -49,7 +60,7 @@ func (cpa *CheckPriceAlert) Execute() error {
 			defer wg.Done()
 			defer func() { <-alertChannel }()
 
-			err := cpa.processAlert(ctx, alert)
+			err := cpa.processAlert(ctx, alert, assetsPrices)
 			if err != nil {
 				select {
 				case errChannel <- err:
@@ -71,12 +82,11 @@ func (cpa *CheckPriceAlert) Execute() error {
 	}
 }
 
-func (cpa *CheckPriceAlert) processAlert(ctx context.Context, alert *domain.PriceAlert) error {
-	price, err := cpa.priceProvider.GetPrice(alert.Crypto)
-	if err != nil {
-		return fmt.Errorf("error getting price for %s: %w", alert.Crypto, err)
+func (cpa *CheckPriceAlert) processAlert(ctx context.Context, alert *domain.PriceAlert, assetsPrices map[string]float64) error {
+	price, exists := assetsPrices[alert.Crypto]
+	if !exists {
+		return fmt.Errorf("price for %s not found", alert.Crypto)
 	}
-	logger.Log.Infof("price for %s: %f", alert.Crypto, price)
 
 	newAlertStatus := domain.UnderPrice
 	if price >= alert.AlertPrice {
