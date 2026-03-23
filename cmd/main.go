@@ -38,7 +38,13 @@ func main() {
 	}
 
 	// Router
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		SkipPaths: []string{"/healthz"},
+	}))
+	router.Use(gin.Recovery())
+
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Accept-Encoding", "Accept-Language", "Cache-Control", "Connection", "Referer", "User-Agent"},
