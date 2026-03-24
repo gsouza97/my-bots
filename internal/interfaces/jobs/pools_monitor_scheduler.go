@@ -1,4 +1,4 @@
-package scheduler
+package jobs
 
 import (
 	"github.com/gsouza97/my-bots/internal/application/usecases/pools"

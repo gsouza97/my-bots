@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gsouza97/my-bots/config"
-	"github.com/gsouza97/my-bots/internal/scheduler"
+	"github.com/gsouza97/my-bots/internal/interfaces/jobs"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -24,20 +24,20 @@ type Composer struct {
 }
 
 type SchedulersComposer struct {
-	AlertMonitorScheduler        *scheduler.AlertMonitorScheduler
-	DailyAlertScheduler          *scheduler.DailyAlertScheduler
-	PoolsMonitorScheduler        *scheduler.PoolsMonitorScheduler
-	HomologacionMonitorScheduler *scheduler.HomologacionMonitorScheduler
-	LoansMonitorScheduler        *scheduler.LoansMonitorScheduler
+	AlertMonitorScheduler        *jobs.AlertMonitorScheduler
+	DailyAlertScheduler          *jobs.DailyAlertScheduler
+	PoolsMonitorScheduler        *jobs.PoolsMonitorScheduler
+	HomologacionMonitorScheduler *jobs.HomologacionMonitorScheduler
+	LoansMonitorScheduler        *jobs.LoansMonitorScheduler
 }
 
 func NewSchedulersComposer(useCases *UseCasesComposer, cfg *config.Config) *SchedulersComposer {
 	return &SchedulersComposer{
-		AlertMonitorScheduler:        scheduler.NewAlertMonitorScheduler(useCases.CheckPriceAlert, cfg.AlertMonitorCron),
-		DailyAlertScheduler:          scheduler.NewDailyAlertScheduler(useCases.GenerateDailyAlert, cfg.DailyAlertCron),
-		PoolsMonitorScheduler:        scheduler.NewPoolsMonitorScheduler(useCases.CheckPools, cfg.PoolsMonitorCron),
-		HomologacionMonitorScheduler: scheduler.NewHomologacionMonitorScheduler(useCases.GetHomologacionStatus, cfg.HomologacionMonitorCron),
-		LoansMonitorScheduler:        scheduler.NewLoansMonitorScheduler(useCases.CheckLoans, cfg.LoansMonitorCron),
+		AlertMonitorScheduler:        jobs.NewAlertMonitorScheduler(useCases.CheckPriceAlert, cfg.AlertMonitorCron),
+		DailyAlertScheduler:          jobs.NewDailyAlertScheduler(useCases.GenerateDailyAlert, cfg.DailyAlertCron),
+		PoolsMonitorScheduler:        jobs.NewPoolsMonitorScheduler(useCases.CheckPools, cfg.PoolsMonitorCron),
+		HomologacionMonitorScheduler: jobs.NewHomologacionMonitorScheduler(useCases.GetHomologacionStatus, cfg.HomologacionMonitorCron),
+		LoansMonitorScheduler:        jobs.NewLoansMonitorScheduler(useCases.CheckLoans, cfg.LoansMonitorCron),
 	}
 }
 
