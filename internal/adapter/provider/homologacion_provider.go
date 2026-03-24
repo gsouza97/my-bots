@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/shared/constants"
 )
 
 type HomologacionProvider struct {

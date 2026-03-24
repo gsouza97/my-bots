@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gsouza97/my-bots/internal/constants"
+	"github.com/gsouza97/my-bots/internal/shared/constants"
 )
 
 type BinancePriceProvider struct {

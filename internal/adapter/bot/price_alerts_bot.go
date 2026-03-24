@@ -6,8 +6,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/gsouza97/my-bots/internal/application/usecases/marketindices"
 	"github.com/gsouza97/my-bots/internal/application/usecases/pricealerts"
-	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
+	"github.com/gsouza97/my-bots/internal/shared/constants"
 )
 
 type PriceAlertsBot struct {
