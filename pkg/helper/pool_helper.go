@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/infrastructure/providers"
 )
 
 func BuildPoolResponseMessage(pools []*domain.Pool) string {
@@ -75,7 +75,7 @@ func BuildWarningMessage(pool *domain.Pool, price float64, percent float64, diff
 	return message
 }
 
-func CalculateFeesToCollect(data provider.RevertPoolDataResponse) (float64, error) {
+func CalculateFeesToCollect(data providers.RevertPoolDataResponse) (float64, error) {
 	token1Price, err := strconv.ParseFloat(data.Tokens[data.Token0].Price, 64)
 	if err != nil {
 		return 0, fmt.Errorf("erro ao converter preço do token 1: %w", err)

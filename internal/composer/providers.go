@@ -1,21 +1,21 @@
 package composer
 
-import "github.com/gsouza97/my-bots/internal/adapter/provider"
+import "github.com/gsouza97/my-bots/internal/infrastructure/providers"
 
 type ProvidersComposer struct {
-	BinancePriceProvider  *provider.BinancePriceProvider
-	RevertFeeProvider     *provider.RevertFeeProvider
-	FearAndGreedProvider  *provider.AlternativeFearAndGreedProvider
-	AltcoinSeasonProvider *provider.CmcAltcoinSeasonProvider
-	HomologacionProvider  *provider.HomologacionProvider
+	BinancePriceProvider  *providers.BinancePriceProvider
+	RevertFeeProvider     *providers.RevertFeeProvider
+	FearAndGreedProvider  *providers.AlternativeFearAndGreedProvider
+	AltcoinSeasonProvider *providers.CmcAltcoinSeasonProvider
+	HomologacionProvider  *providers.HomologacionProvider
 }
 
 func NewProvidersComposer() *ProvidersComposer {
 	return &ProvidersComposer{
-		BinancePriceProvider:  provider.NewBinancePriceProvider(),
-		RevertFeeProvider:     provider.NewRevertFeeProvider(),
-		FearAndGreedProvider:  provider.NewAlternativeFearAndGreedProvider(),
-		AltcoinSeasonProvider: provider.NewCmcAltcoinSeasonProvider(),
-		HomologacionProvider:  provider.NewHomologacionProvider(),
+		BinancePriceProvider:  providers.NewBinancePriceProvider(),
+		RevertFeeProvider:     providers.NewRevertFeeProvider(),
+		FearAndGreedProvider:  providers.NewAlternativeFearAndGreedProvider(),
+		AltcoinSeasonProvider: providers.NewCmcAltcoinSeasonProvider(),
+		HomologacionProvider:  providers.NewHomologacionProvider(),
 	}
 }

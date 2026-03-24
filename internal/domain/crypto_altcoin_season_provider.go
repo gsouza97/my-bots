@@ -1,9 +1,7 @@
 package domain
 
-import (
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
-)
+import "github.com/gsouza97/my-bots/internal/infrastructure/providers"
 
 type CryptoAltcoinSeasonProvider interface {
-	GetAltcoinSeasonIndex() (provider.CmcAltcoinSeasonIndexResponse, error)
+	GetAltcoinSeasonIndex() (providers.CmcAltcoinSeasonIndexResponse, error)
 }

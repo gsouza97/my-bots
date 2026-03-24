@@ -1,9 +1,7 @@
 package domain
 
-import (
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
-)
+import "github.com/gsouza97/my-bots/internal/infrastructure/providers"
 
 type CryptoFearAndGreedProvider interface {
-	GetFearAndGreedIndex() (provider.AlternativeFearAndGreedDataResponse, error)
+	GetFearAndGreedIndex() (providers.AlternativeFearAndGreedDataResponse, error)
 }

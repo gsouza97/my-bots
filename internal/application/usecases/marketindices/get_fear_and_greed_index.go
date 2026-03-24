@@ -3,8 +3,8 @@ package marketindices
 import (
 	"fmt"
 
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/infrastructure/providers"
 )
 
 type GetFearAndGreedIndex struct {
@@ -28,7 +28,7 @@ func (uc *GetFearAndGreedIndex) Execute() (string, error) {
 	return msg, nil
 }
 
-func buildFearAndGreedMessage(data provider.AlternativeFearAndGreedDataResponse) string {
+func buildFearAndGreedMessage(data providers.AlternativeFearAndGreedDataResponse) string {
 	return fmt.Sprintf(
 		"Fear and Greed Index: %s → %s",
 		data.Value, data.ValueClassification,

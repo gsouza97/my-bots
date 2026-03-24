@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
 	"github.com/gsouza97/my-bots/internal/domain/events"
+	"github.com/gsouza97/my-bots/internal/infrastructure/providers"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
@@ -63,7 +63,7 @@ func (uc *GetHomologacionStatus) Execute() error {
 	return nil
 }
 
-func buildHomologacionMessage(data provider.HomologacionResponse, currentStatus string, homologParams *domain.HomologacionConfigParams) string {
+func buildHomologacionMessage(data providers.HomologacionResponse, currentStatus string, homologParams *domain.HomologacionConfigParams) string {
 	if data[0].Estado != currentStatus {
 		return fmt.Sprintf(
 			"Homologacao %s:\nEstado da homologação alterado para: %s",

@@ -3,8 +3,8 @@ package marketindices
 import (
 	"fmt"
 
-	"github.com/gsouza97/my-bots/internal/adapter/provider"
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/infrastructure/providers"
 )
 
 type GetAltcoinSeasonIndex struct {
@@ -27,7 +27,7 @@ func (uc *GetAltcoinSeasonIndex) Execute() (string, error) {
 	return msg, nil
 }
 
-func buildAltcoinSeasonMessage(data provider.CmcAltcoinSeasonIndexResponse) string {
+func buildAltcoinSeasonMessage(data providers.CmcAltcoinSeasonIndexResponse) string {
 	if data.Name == "" {
 		return fmt.Sprintf(
 			"Altcoin Season Index: %s",
