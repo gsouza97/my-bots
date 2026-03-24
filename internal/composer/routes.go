@@ -3,7 +3,7 @@ package composer
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gsouza97/my-bots/internal/handlers"
-	"github.com/gsouza97/my-bots/internal/httpserver/middleware"
+	"github.com/gsouza97/my-bots/internal/interfaces/http/middleware"
 	"github.com/gsouza97/my-bots/internal/interfaces/http/routes"
 )
 
