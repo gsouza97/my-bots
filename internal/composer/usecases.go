@@ -3,7 +3,13 @@ package composer
 import (
 	"github.com/gsouza97/my-bots/config"
 	"github.com/gsouza97/my-bots/internal/adapter/bot"
-	"github.com/gsouza97/my-bots/internal/usecase"
+	"github.com/gsouza97/my-bots/internal/application/usecases/bills"
+	"github.com/gsouza97/my-bots/internal/application/usecases/dailyalert"
+	"github.com/gsouza97/my-bots/internal/application/usecases/homologacion"
+	"github.com/gsouza97/my-bots/internal/application/usecases/loans"
+	"github.com/gsouza97/my-bots/internal/application/usecases/marketindices"
+	"github.com/gsouza97/my-bots/internal/application/usecases/pools"
+	"github.com/gsouza97/my-bots/internal/application/usecases/pricealerts"
 )
 
 type UseCasesComposer struct {
@@ -15,21 +21,21 @@ type UseCasesComposer struct {
 	LoansBot        *bot.LoansBot
 
 	// Use Cases para scheduler
-	CheckPriceAlert       *usecase.CheckPriceAlert
-	GenerateDailyAlert    *usecase.GenerateDailyAlert
-	CheckPools            *usecase.CheckPools
-	GetHomologacionStatus *usecase.GetHomologacionStatus
-	CheckLoans            *usecase.CheckLoans
+	CheckPriceAlert       *pricealerts.CheckPriceAlert
+	GenerateDailyAlert    *dailyalert.GenerateDailyAlert
+	CheckPools            *pools.CheckPools
+	GetHomologacionStatus *homologacion.GetHomologacionStatus
+	CheckLoans            *loans.CheckLoans
 
 	// Use Cases
-	SaveBill              *usecase.SaveBill
-	GenerateReport        *usecase.GenerateReport
-	ListActivePools       *usecase.ListActivePools
-	GetPoolFees           *usecase.GetPoolFees
-	GetLoans              *usecase.GetLoans
-	GetFearAndGreedIndex  *usecase.GetFearAndGreedIndex
-	GetAltcoinSeasonIndex *usecase.GetAltcoinSeasonIndex
-	CheckPrice            *usecase.CheckPrice
+	SaveBill              *bills.SaveBill
+	GenerateReport        *bills.GenerateReport
+	ListActivePools       *pools.ListActivePools
+	GetPoolFees           *pools.GetPoolFees
+	GetLoans              *loans.GetLoans
+	GetFearAndGreedIndex  *marketindices.GetFearAndGreedIndex
+	GetAltcoinSeasonIndex *marketindices.GetAltcoinSeasonIndex
+	CheckPrice            *pricealerts.CheckPrice
 }
 
 func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersComposer, adapters *AdaptersComposer, eventPublishing *EventPublishingComposer, cfg *config.Config) *UseCasesComposer {
@@ -37,17 +43,17 @@ func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersCompos
 
 	// ==================== LEVEL 1: Use Cases Independentes ====================
 	// Usam apenas providers (sem repos, sem event publisher)
-	uc.GetFearAndGreedIndex = usecase.NewGetFearAndGreedIndex(providers.FearAndGreedProvider)
-	uc.GetAltcoinSeasonIndex = usecase.NewGetAltcoinSeasonIndex(providers.AltcoinSeasonProvider)
+	uc.GetFearAndGreedIndex = marketindices.NewGetFearAndGreedIndex(providers.FearAndGreedProvider)
+	uc.GetAltcoinSeasonIndex = marketindices.NewGetAltcoinSeasonIndex(providers.AltcoinSeasonProvider)
 
 	// ==================== LEVEL 2: Use Cases Simples ====================
 	// Usam apenas repos + providers (sem event publisher, sem bots)
-	uc.CheckPrice = usecase.NewCheckPrice(repos.PriceAlertRepository, providers.BinancePriceProvider)
-	uc.SaveBill = usecase.NewSaveBill(repos.BillRepository)
-	uc.GenerateReport = usecase.NewGenerateReport(repos.BillRepository)
-	uc.ListActivePools = usecase.NewListActivePools(repos.PoolRepository)
-	uc.GetPoolFees = usecase.NewGetPoolFees(repos.PoolRepository, providers.RevertFeeProvider)
-	uc.GetLoans = usecase.NewGetLoans(repos.LoanRepository, providers.BinancePriceProvider)
+	uc.CheckPrice = pricealerts.NewCheckPrice(repos.PriceAlertRepository, providers.BinancePriceProvider)
+	uc.SaveBill = bills.NewSaveBill(repos.BillRepository)
+	uc.GenerateReport = bills.NewGenerateReport(repos.BillRepository)
+	uc.ListActivePools = pools.NewListActivePools(repos.PoolRepository)
+	uc.GetPoolFees = pools.NewGetPoolFees(repos.PoolRepository, providers.RevertFeeProvider)
+	uc.GetLoans = loans.NewGetLoans(repos.LoanRepository, providers.BinancePriceProvider)
 
 	// ==================== LEVEL 3: Bots ====================
 	// Usam adapters + use cases independentes
@@ -81,28 +87,28 @@ func NewUseCasesComposer(repos *RepositoriesComposer, providers *ProvidersCompos
 
 	// ==================== LEVEL 4: Use Cases com Event Publishing ====================
 	// Usam event publisher para notificar via listeners (ex: Telegram)
-	uc.CheckPriceAlert = usecase.NewCheckPriceAlert(
+	uc.CheckPriceAlert = pricealerts.NewCheckPriceAlert(
 		repos.PriceAlertRepository,
 		providers.BinancePriceProvider,
 		eventPublishing.EventPublisher,
 	)
-	uc.CheckPools = usecase.NewCheckPools(
+	uc.CheckPools = pools.NewCheckPools(
 		repos.PoolRepository,
 		providers.BinancePriceProvider,
 		eventPublishing.EventPublisher,
 		cfg.NotificationCooldown,
 	)
-	uc.CheckLoans = usecase.NewCheckLoans(
+	uc.CheckLoans = loans.NewCheckLoans(
 		repos.LoanRepository,
 		providers.BinancePriceProvider,
 		eventPublishing.EventPublisher,
 	)
-	uc.GetHomologacionStatus = usecase.NewGetHomologacionStatus(
+	uc.GetHomologacionStatus = homologacion.NewGetHomologacionStatus(
 		providers.HomologacionProvider,
 		repos.HomologacionRepository,
 		eventPublishing.EventPublisher,
 	)
-	uc.GenerateDailyAlert = usecase.NewGenerateDailyAlert(
+	uc.GenerateDailyAlert = dailyalert.NewGenerateDailyAlert(
 		uc.GetPoolFees,
 		uc.GetFearAndGreedIndex,
 		uc.GetAltcoinSeasonIndex,

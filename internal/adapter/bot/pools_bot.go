@@ -6,19 +6,19 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
+	"github.com/gsouza97/my-bots/internal/application/usecases/pools"
 	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type PoolsBot struct {
 	adapter                *TelegramAdapter
-	listActivePoolsUseCase *usecase.ListActivePools
-	getPoolFeesUseCase     *usecase.GetPoolFees
+	listActivePoolsUseCase *pools.ListActivePools
+	getPoolFeesUseCase     *pools.GetPoolFees
 	chatID                 int64
 }
 
-func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *usecase.ListActivePools, getPoolFeesUseCase *usecase.GetPoolFees, chatID string) *PoolsBot {
+func NewPoolsBot(adapter *TelegramAdapter, listActivePoolsUseCase *pools.ListActivePools, getPoolFeesUseCase *pools.GetPoolFees, chatID string) *PoolsBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil

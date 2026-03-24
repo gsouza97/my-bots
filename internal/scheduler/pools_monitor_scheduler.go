@@ -1,17 +1,17 @@
 package scheduler
 
 import (
+	"github.com/gsouza97/my-bots/internal/application/usecases/pools"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
 
 type PoolsMonitorScheduler struct {
-	checkPools *usecase.CheckPools
+	checkPools *pools.CheckPools
 	cron       string
 }
 
-func NewPoolsMonitorScheduler(checkPools *usecase.CheckPools, cron string) *PoolsMonitorScheduler {
+func NewPoolsMonitorScheduler(checkPools *pools.CheckPools, cron string) *PoolsMonitorScheduler {
 	return &PoolsMonitorScheduler{
 		checkPools: checkPools,
 		cron:       cron,

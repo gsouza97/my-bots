@@ -1,17 +1,17 @@
 package scheduler
 
 import (
+	"github.com/gsouza97/my-bots/internal/application/usecases/loans"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
 
 type LoansMonitorScheduler struct {
-	checkLoans *usecase.CheckLoans
+	checkLoans *loans.CheckLoans
 	cron       string
 }
 
-func NewLoansMonitorScheduler(checkLoans *usecase.CheckLoans, cron string) *LoansMonitorScheduler {
+func NewLoansMonitorScheduler(checkLoans *loans.CheckLoans, cron string) *LoansMonitorScheduler {
 	return &LoansMonitorScheduler{
 		checkLoans: checkLoans,
 		cron:       cron,

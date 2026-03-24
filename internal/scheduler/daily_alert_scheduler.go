@@ -3,17 +3,17 @@ package scheduler
 import (
 	"time"
 
+	"github.com/gsouza97/my-bots/internal/application/usecases/dailyalert"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
 
 type DailyAlertScheduler struct {
-	generateDailyAlert *usecase.GenerateDailyAlert
+	generateDailyAlert *dailyalert.GenerateDailyAlert
 	cron               string
 }
 
-func NewDailyAlertScheduler(generateDailyAlert *usecase.GenerateDailyAlert, cron string) *DailyAlertScheduler {
+func NewDailyAlertScheduler(generateDailyAlert *dailyalert.GenerateDailyAlert, cron string) *DailyAlertScheduler {
 	return &DailyAlertScheduler{
 		generateDailyAlert: generateDailyAlert,
 		cron:               cron,

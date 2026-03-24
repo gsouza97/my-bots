@@ -1,17 +1,17 @@
 package scheduler
 
 import (
+	"github.com/gsouza97/my-bots/internal/application/usecases/pricealerts"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
 
 type AlertMonitorScheduler struct {
-	checkPriceAlert *usecase.CheckPriceAlert
+	checkPriceAlert *pricealerts.CheckPriceAlert
 	cron            string
 }
 
-func NewAlertMonitorScheduler(checkPriceAlert *usecase.CheckPriceAlert, cron string) *AlertMonitorScheduler {
+func NewAlertMonitorScheduler(checkPriceAlert *pricealerts.CheckPriceAlert, cron string) *AlertMonitorScheduler {
 	return &AlertMonitorScheduler{
 		checkPriceAlert: checkPriceAlert,
 		cron:            cron,

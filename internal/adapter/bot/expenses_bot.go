@@ -5,18 +5,18 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
+	"github.com/gsouza97/my-bots/internal/application/usecases/bills"
 	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type ExpensesBot struct {
 	adapter               *TelegramAdapter
-	saveUseCase           *usecase.SaveBill
-	generateReportUseCase *usecase.GenerateReport
+	saveUseCase           *bills.SaveBill
+	generateReportUseCase *bills.GenerateReport
 }
 
-func NewExpensesBot(adapter *TelegramAdapter, saveUseCase *usecase.SaveBill, generateReportUseCase *usecase.GenerateReport) *ExpensesBot {
+func NewExpensesBot(adapter *TelegramAdapter, saveUseCase *bills.SaveBill, generateReportUseCase *bills.GenerateReport) *ExpensesBot {
 	return &ExpensesBot{
 		adapter:               adapter,
 		saveUseCase:           saveUseCase,

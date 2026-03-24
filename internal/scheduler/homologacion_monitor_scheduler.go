@@ -1,17 +1,17 @@
 package scheduler
 
 import (
+	"github.com/gsouza97/my-bots/internal/application/usecases/homologacion"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 	"github.com/robfig/cron/v3"
 )
 
 type HomologacionMonitorScheduler struct {
-	getHomologacionStatus *usecase.GetHomologacionStatus
+	getHomologacionStatus *homologacion.GetHomologacionStatus
 	cron                  string
 }
 
-func NewHomologacionMonitorScheduler(getHomologacionStatus *usecase.GetHomologacionStatus, cron string) *HomologacionMonitorScheduler {
+func NewHomologacionMonitorScheduler(getHomologacionStatus *homologacion.GetHomologacionStatus, cron string) *HomologacionMonitorScheduler {
 	return &HomologacionMonitorScheduler{
 		getHomologacionStatus: getHomologacionStatus,
 		cron:                  cron,

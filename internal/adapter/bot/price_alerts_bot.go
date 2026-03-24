@@ -4,20 +4,21 @@ import (
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/gsouza97/my-bots/internal/application/usecases/marketindices"
+	"github.com/gsouza97/my-bots/internal/application/usecases/pricealerts"
 	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type PriceAlertsBot struct {
 	adapter                 *TelegramAdapter
-	checkPriceUseCase       *usecase.CheckPrice
-	getFearAndGreedUseCase  *usecase.GetFearAndGreedIndex
-	getAltcoinSeasonUseCase *usecase.GetAltcoinSeasonIndex
+	checkPriceUseCase       *pricealerts.CheckPrice
+	getFearAndGreedUseCase  *marketindices.GetFearAndGreedIndex
+	getAltcoinSeasonUseCase *marketindices.GetAltcoinSeasonIndex
 	chatID                  int64
 }
 
-func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *usecase.CheckPrice, getFearAndGreedUseCase *usecase.GetFearAndGreedIndex, getAltcoinSeasonUseCase *usecase.GetAltcoinSeasonIndex, chatID string) *PriceAlertsBot {
+func NewPriceAlertsBot(adapter *TelegramAdapter, checkPriceUseCase *pricealerts.CheckPrice, getFearAndGreedUseCase *marketindices.GetFearAndGreedIndex, getAltcoinSeasonUseCase *marketindices.GetAltcoinSeasonIndex, chatID string) *PriceAlertsBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil

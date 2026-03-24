@@ -1,10 +1,12 @@
-package usecase
+package dailyalert
 
 import (
 	"context"
 	"fmt"
 	"strings"
 
+	"github.com/gsouza97/my-bots/internal/application/usecases/marketindices"
+	"github.com/gsouza97/my-bots/internal/application/usecases/pools"
 	"github.com/gsouza97/my-bots/internal/domain"
 	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
@@ -12,15 +14,15 @@ import (
 )
 
 type GenerateDailyAlert struct {
-	getPoolFees      *GetPoolFees
-	getFearAndGreed  *GetFearAndGreedIndex
-	getAltcoinSeason *GetAltcoinSeasonIndex
+	getPoolFees      *pools.GetPoolFees
+	getFearAndGreed  *marketindices.GetFearAndGreedIndex
+	getAltcoinSeason *marketindices.GetAltcoinSeasonIndex
 	alertRepository  repository.PriceAlertRepository
 	priceProvider    domain.CryptoPriceProvider
 	eventPublisher   domain.EventPublisher
 }
 
-func NewGenerateDailyAlert(getPoolFees *GetPoolFees, getFearAndGreed *GetFearAndGreedIndex, getAltcoinSeason *GetAltcoinSeasonIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *GenerateDailyAlert {
+func NewGenerateDailyAlert(getPoolFees *pools.GetPoolFees, getFearAndGreed *marketindices.GetFearAndGreedIndex, getAltcoinSeason *marketindices.GetAltcoinSeasonIndex, alertRepository repository.PriceAlertRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *GenerateDailyAlert {
 	return &GenerateDailyAlert{
 		getPoolFees:      getPoolFees,
 		getFearAndGreed:  getFearAndGreed,

@@ -1,37 +1,34 @@
-package usecase
+package loans
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/gsouza97/my-bots/internal/domain"
-	"github.com/gsouza97/my-bots/internal/domain/events"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
 )
 
-type CheckLoans struct {
+type GetLoans struct {
 	loanRepository repository.LoanRepository
 	priceProvider  domain.CryptoPriceProvider
-	eventPublisher domain.EventPublisher
 }
 
-func NewCheckLoans(loanRepository repository.LoanRepository, priceProvider domain.CryptoPriceProvider, eventPublisher domain.EventPublisher) *CheckLoans {
-	return &CheckLoans{
+func NewGetLoans(loanRepository repository.LoanRepository, priceProvider domain.CryptoPriceProvider) *GetLoans {
+	return &GetLoans{
 		loanRepository: loanRepository,
 		priceProvider:  priceProvider,
-		eventPublisher: eventPublisher,
 	}
 }
 
-func (cl *CheckLoans) Execute() error {
+func (gl *GetLoans) Execute(ctx context.Context) (string, error) {
 	t := time.Now()
-	ctx := context.Background()
 
-	loans, err := cl.loanRepository.FindAll(ctx)
+	loans, err := gl.loanRepository.FindAll(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	assetsSet := make(map[string]bool)
@@ -49,15 +46,14 @@ func (cl *CheckLoans) Execute() error {
 		assetsList = append(assetsList, asset)
 	}
 
-	logger.Log.Infof("Assets encontrados nos empréstimos: %v", assetsList)
-
-	assetsPrices, err := cl.priceProvider.GetMultiplePrices(assetsList)
+	assetsPrices, err := gl.priceProvider.GetMultiplePrices(assetsList)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	var suppliesBalance float64
 	var borrowsBalance float64
+	loansMessage := fmt.Sprintf("📌 Empréstimos:\n")
 
 	for _, loan := range loans {
 		for _, supply := range loan.Supplies {
@@ -75,18 +71,11 @@ func (cl *CheckLoans) Execute() error {
 		logger.Log.Infof("Total Emprestado para %s: %.2f", loan.Description, borrowsBalance)
 		logger.Log.Infof("LTV Atual para %s: %.2f%%", loan.Description, currentLtv*100)
 
-		// Notificar
-		if (loan.LiqLtv - currentLtv) <= loan.AlertRate {
-			msg := helper.BuildLoanWarningMessage(loan, currentLtv)
-
-			event := events.NewLoanAlertTriggeredEvent(loan.ID.String(), msg)
-
-			cl.eventPublisher.Publish(ctx, event)
-		}
+		loansMessage += helper.BuildLoansReportMessage(*loan, suppliesBalance, borrowsBalance, currentLtv)
 
 		// Atualizar Base de Dados
 		loan.CurrentLtv = currentLtv
-		err = cl.loanRepository.Update(ctx, loan)
+		err = gl.loanRepository.Update(ctx, loan)
 		if err != nil {
 			logger.Log.Errorf("Erro ao atualizar LTV do empréstimo '%s': %s", loan.Description, err.Error())
 		}
@@ -98,7 +87,7 @@ func (cl *CheckLoans) Execute() error {
 	t2 := time.Now()
 
 	tFinal := t2.Sub(t)
-	logger.Log.Infof("Tempo total check_loans: %s", tFinal)
+	logger.Log.Infof("Tempo total get_loans: %s", tFinal)
 
-	return nil
+	return loansMessage, nil
 }

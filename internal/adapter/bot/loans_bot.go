@@ -5,18 +5,18 @@ import (
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/gsouza97/my-bots/internal/application/usecases/loans"
 	"github.com/gsouza97/my-bots/internal/constants"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/usecase"
 )
 
 type LoansBot struct {
 	adapter         *TelegramAdapter
-	getLoansUseCase *usecase.GetLoans
+	getLoansUseCase *loans.GetLoans
 	chatID          int64
 }
 
-func NewLoansBot(adapter *TelegramAdapter, getLoansUseCase *usecase.GetLoans, chatID string) *LoansBot {
+func NewLoansBot(adapter *TelegramAdapter, getLoansUseCase *loans.GetLoans, chatID string) *LoansBot {
 	chatIDInt, err := strconv.ParseInt(chatID, 10, 64)
 	if err != nil {
 		return nil
