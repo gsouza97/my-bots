@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gsouza97/my-bots/internal/handlers"
+	"github.com/gsouza97/my-bots/internal/interfaces/http/handlers"
 )
 
 type LoansRoutes struct {
