@@ -1,10 +1,10 @@
-package service
+package services
 
 import (
 	"context"
 
+	"github.com/gsouza97/my-bots/internal/application/dto"
 	"github.com/gsouza97/my-bots/internal/domain"
-	"github.com/gsouza97/my-bots/internal/dto"
 	"github.com/gsouza97/my-bots/internal/logger"
 	"github.com/gsouza97/my-bots/internal/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"

@@ -1,14 +1,12 @@
 package composer
 
-import (
-	"github.com/gsouza97/my-bots/internal/httpserver/service"
-)
+import "github.com/gsouza97/my-bots/internal/application/services"
 
 type ServicesComposer struct {
-	AlertsService *service.AlertsService
-	LoansService  *service.LoansService
-	PoolsService  *service.PoolsService
-	AuthService   *service.AuthService
+	AlertsService *services.AlertsService
+	LoansService  *services.LoansService
+	PoolsService  *services.PoolsService
+	AuthService   *services.AuthService
 }
 
 func NewServicesComposer(
@@ -17,9 +15,9 @@ func NewServicesComposer(
 	cfg struct{ UserToken string },
 ) *ServicesComposer {
 	return &ServicesComposer{
-		AlertsService: service.NewAlertsService(repos.PriceAlertRepository, providers.BinancePriceProvider),
-		LoansService:  service.NewLoansService(repos.LoanRepository, providers.BinancePriceProvider),
-		PoolsService:  service.NewPoolsService(repos.PoolRepository, providers.BinancePriceProvider),
-		AuthService:   service.NewAuthService(repos.UserRepository, cfg.UserToken),
+		AlertsService: services.NewAlertsService(repos.PriceAlertRepository, providers.BinancePriceProvider),
+		LoansService:  services.NewLoansService(repos.LoanRepository, providers.BinancePriceProvider),
+		PoolsService:  services.NewPoolsService(repos.PoolRepository, providers.BinancePriceProvider),
+		AuthService:   services.NewAuthService(repos.UserRepository, cfg.UserToken),
 	}
 }

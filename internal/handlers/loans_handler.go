@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gsouza97/my-bots/internal/httpserver/service"
+	"github.com/gsouza97/my-bots/internal/application/services"
 	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type LoansHandler struct {
-	loansService *service.LoansService
+	loansService *services.LoansService
 }
 
-func NewLoansHandler(loansService *service.LoansService) *LoansHandler {
+func NewLoansHandler(loansService *services.LoansService) *LoansHandler {
 	return &LoansHandler{
 		loansService: loansService,
 	}

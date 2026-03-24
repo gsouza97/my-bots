@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gsouza97/my-bots/internal/httpserver/service"
+	"github.com/gsouza97/my-bots/internal/application/services"
 	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type PoolsHandler struct {
-	poolsService *service.PoolsService
+	poolsService *services.PoolsService
 }
 
-func NewPoolsHandler(poolsService *service.PoolsService) *PoolsHandler {
+func NewPoolsHandler(poolsService *services.PoolsService) *PoolsHandler {
 	return &PoolsHandler{
 		poolsService: poolsService,
 	}

@@ -4,16 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gsouza97/my-bots/internal/dto"
-	"github.com/gsouza97/my-bots/internal/httpserver/service"
+	"github.com/gsouza97/my-bots/internal/application/dto"
+	"github.com/gsouza97/my-bots/internal/application/services"
 	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type AlertsHandler struct {
-	alertsService *service.AlertsService
+	alertsService *services.AlertsService
 }
 
-func NewAlertsHandler(alertsService *service.AlertsService) *AlertsHandler {
+func NewAlertsHandler(alertsService *services.AlertsService) *AlertsHandler {
 	return &AlertsHandler{
 		alertsService: alertsService,
 	}

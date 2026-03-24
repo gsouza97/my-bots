@@ -4,16 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gsouza97/my-bots/internal/dto"
-	"github.com/gsouza97/my-bots/internal/httpserver/service"
+	"github.com/gsouza97/my-bots/internal/application/dto"
+	"github.com/gsouza97/my-bots/internal/application/services"
 	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type LoginHandler struct {
-	authService *service.AuthService
+	authService *services.AuthService
 }
 
-func NewLoginHandler(authService *service.AuthService) *LoginHandler {
+func NewLoginHandler(authService *services.AuthService) *LoginHandler {
 	return &LoginHandler{
 		authService: authService,
 	}

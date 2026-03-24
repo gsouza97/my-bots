@@ -1,10 +1,10 @@
-package service
+package services
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/gsouza97/my-bots/internal/dto"
+	"github.com/gsouza97/my-bots/internal/application/dto"
 	"github.com/gsouza97/my-bots/internal/repository"
 )
 
