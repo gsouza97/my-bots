@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
 	"github.com/gsouza97/my-bots/pkg/helper"
 )
 

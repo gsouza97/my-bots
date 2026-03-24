@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gsouza97/my-bots/internal/application/dto"
-	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
 )
 
 type AuthService struct {

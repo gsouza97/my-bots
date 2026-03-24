@@ -9,8 +9,8 @@ import (
 	"github.com/gsouza97/my-bots/internal/application/usecases/pools"
 	"github.com/gsouza97/my-bots/internal/domain"
 	"github.com/gsouza97/my-bots/internal/domain/events"
+	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
 	"github.com/gsouza97/my-bots/internal/logger"
-	"github.com/gsouza97/my-bots/internal/repository"
 )
 
 type GenerateDailyAlert struct {

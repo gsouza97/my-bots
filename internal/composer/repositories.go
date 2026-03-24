@@ -1,7 +1,7 @@
 package composer
 
 import (
-	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

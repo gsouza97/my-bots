@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gsouza97/my-bots/internal/domain"
-	"github.com/gsouza97/my-bots/internal/repository"
+	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
 )
 
 type PoolsService struct {
