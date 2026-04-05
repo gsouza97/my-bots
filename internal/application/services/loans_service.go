@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gsouza97/my-bots/internal/application/dto"
 	"github.com/gsouza97/my-bots/internal/domain"
@@ -111,34 +112,42 @@ func (s *LoansService) GetAll() ([]*dto.LoanOutput, error) {
 // 	return alert, nil
 // }
 
-// func (uc *LoansService) CreateAlert(input dto.CreatePriceAlertInput) (*domain.PriceAlert, error) {
-// 	ctx := context.Background()
+func (uc *LoansService) CreateLoan(input dto.CreateLoanInput) (*domain.Loan, error) {
+	ctx := context.Background()
 
-// 	alert := &domain.PriceAlert{
-// 		Crypto:     input.Crypto,
-// 		AlertPrice: input.AlertPrice,
-// 		Active:     true,
-// 	}
+	if input.Borrows == nil || input.Supplies == nil {
+		return nil, fmt.Errorf("both borrows and supplies must be provided")
+	}
 
-// 	price, err := uc.priceProvider.GetPrice(alert.Crypto)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if len(input.Borrows) == 0 || len(input.Supplies) == 0 {
+		return nil, fmt.Errorf("both borrows and supplies must have at least one item")
+	}
 
-// 	alert.PriceStatus = domain.UnderPrice
-// 	if price >= alert.AlertPrice {
-// 		alert.PriceStatus = domain.OverPrice
-// 	}
+	loan := &domain.Loan{
+		Description: input.Description,
+		Supplies:    input.Supplies,
+		Borrows:     input.Borrows,
+		LiqLtv:      input.LiqLtv,
+		AlertRate:   input.AlertRate,
+	}
 
-// 	createdAlert, err := uc.loanRepository.Create(ctx, alert)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	assetsList := helper.ExtractLoansAssets([]*domain.Loan{loan})
+	assetsPrices, err := uc.priceProvider.GetMultiplePrices(assetsList)
+	if err != nil {
+		return nil, err
+	}
 
-// 	logger.Log.Infof("Alert created: %+v", createdAlert)
+	loan.CurrentLtv = helper.GetLoanCurrentLtv(input.Supplies, input.Borrows, assetsPrices)
 
-// 	return createdAlert, nil
-// }
+	createdLoan, err := uc.loanRepository.Create(ctx, loan)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Log.Infof("Loan created: %+v", createdLoan)
+
+	return createdLoan, nil
+}
 
 // func createLoansCryptoSet(loans []*domain.Loan) map[string]struct{} {
 // 	var loansCryptos []string

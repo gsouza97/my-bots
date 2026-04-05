@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gsouza97/my-bots/internal/application/dto"
 	"github.com/gsouza97/my-bots/internal/application/services"
 	"github.com/gsouza97/my-bots/internal/logger"
 )
@@ -47,20 +48,20 @@ func (h *LoansHandler) GetAllLoans(c *gin.Context) {
 // 	c.JSON(http.StatusOK, alert)
 // }
 
-// func (h *AlertsHandler) CreateAlert(c *gin.Context) {
-// 	var input dto.CreatePriceAlertInput
+func (h *LoansHandler) CreateLoan(c *gin.Context) {
+	var input dto.CreateLoanInput
 
-// 	if err := c.ShouldBindJSON(&input); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	alert, err := h.alertsService.CreateAlert(input)
-// 	if err != nil {
-// 		logger.Log.Errorf("Error creating alert:", err)
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	loan, err := h.loansService.CreateLoan(input)
+	if err != nil {
+		logger.Log.Errorf("Error creating loan:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	c.JSON(http.StatusCreated, alert)
-// }
+	c.JSON(http.StatusCreated, loan)
+}

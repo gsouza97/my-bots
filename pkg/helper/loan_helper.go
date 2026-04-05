@@ -37,3 +37,24 @@ func ExtractLoansAssets(loans []*domain.Loan) []string {
 
 	return assetsList
 }
+
+func GetLoanCurrentLtv(supplies []domain.LoanItem, borrows []domain.LoanItem, prices map[string]float64) float64 {
+	var totalSuppliesValue float64
+	var totalBorrowsValue float64
+
+	for _, supply := range supplies {
+		price := prices[supply.Asset]
+		totalSuppliesValue += supply.Amount * price
+	}
+
+	for _, borrow := range borrows {
+		price := prices[borrow.Asset]
+		totalBorrowsValue += borrow.Amount * price
+	}
+
+	if totalSuppliesValue == 0 {
+		return 0
+	}
+
+	return totalBorrowsValue / totalSuppliesValue
+}
