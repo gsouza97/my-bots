@@ -101,17 +101,18 @@ func (s *LoansService) UpdateLoan(id string, input dto.UpdateLoanInput) (*domain
 		return nil, err
 	}
 
+	loan.Description = input.Description
+	loan.Supplies = input.Supplies
+	loan.Borrows = input.Borrows
+	loan.LiqLtv = input.LiqLtv
+	loan.AlertRate = input.AlertRate
+
 	loanAssetsList := helper.ExtractLoansAssets([]*domain.Loan{loan})
 	assetsPrices, err := s.priceProvider.GetMultiplePrices(loanAssetsList)
 	if err != nil {
 		return nil, err
 	}
 
-	loan.Description = input.Description
-	loan.Supplies = input.Supplies
-	loan.Borrows = input.Borrows
-	loan.LiqLtv = input.LiqLtv
-	loan.AlertRate = input.AlertRate
 	loan.CurrentLtv = helper.GetLoanCurrentLtv(loan.Supplies, loan.Borrows, assetsPrices)
 
 	err = s.loanRepository.Update(ctx, loan)

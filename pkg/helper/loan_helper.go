@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gsouza97/my-bots/internal/domain"
+	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 func BuildLoanWarningMessage(pool *domain.Loan, currentLtv float64) string {
@@ -55,6 +56,8 @@ func GetLoanCurrentLtv(supplies []domain.LoanItem, borrows []domain.LoanItem, pr
 	if totalSuppliesValue == 0 {
 		return 0
 	}
+
+	logger.Log.Infof("Calculando LTV: Total Supplies = %.2f, Total Borrows = %.2f, Current LTV = %.2f", totalSuppliesValue, totalBorrowsValue, (totalBorrowsValue/totalSuppliesValue)*100)
 
 	return totalBorrowsValue / totalSuppliesValue
 }
