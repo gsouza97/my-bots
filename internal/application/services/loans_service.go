@@ -94,25 +94,35 @@ func (s *LoansService) GetAll() ([]*dto.LoanOutput, error) {
 	return output, nil
 }
 
-// func (s *LoansService) UpdateAlert(id string, input dto.UpdatePriceAlertInput) (*domain.PriceAlert, error) {
-// 	ctx := context.Background()
-// 	alert, err := s.loanRepository.FindById(ctx, id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (s *LoansService) UpdateLoan(id string, input dto.UpdateLoanInput) (*domain.Loan, error) {
+	ctx := context.Background()
+	loan, err := s.loanRepository.FindById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
-// 	alert.Crypto = input.Crypto
-// 	alert.AlertPrice = input.AlertPrice
+	loanAssetsList := helper.ExtractLoansAssets([]*domain.Loan{loan})
+	assetsPrices, err := s.priceProvider.GetMultiplePrices(loanAssetsList)
+	if err != nil {
+		return nil, err
+	}
 
-// 	err = s.loanRepository.Update(ctx, alert)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	loan.Description = input.Description
+	loan.Supplies = input.Supplies
+	loan.Borrows = input.Borrows
+	loan.LiqLtv = input.LiqLtv
+	loan.AlertRate = input.AlertRate
+	loan.CurrentLtv = helper.GetLoanCurrentLtv(loan.Supplies, loan.Borrows, assetsPrices)
 
-// 	return alert, nil
-// }
+	err = s.loanRepository.Update(ctx, loan)
+	if err != nil {
+		return nil, err
+	}
 
-func (uc *LoansService) CreateLoan(input dto.CreateLoanInput) (*domain.Loan, error) {
+	return loan, nil
+}
+
+func (s *LoansService) CreateLoan(input dto.CreateLoanInput) (*domain.Loan, error) {
 	ctx := context.Background()
 
 	if input.Borrows == nil || input.Supplies == nil {
@@ -132,14 +142,14 @@ func (uc *LoansService) CreateLoan(input dto.CreateLoanInput) (*domain.Loan, err
 	}
 
 	assetsList := helper.ExtractLoansAssets([]*domain.Loan{loan})
-	assetsPrices, err := uc.priceProvider.GetMultiplePrices(assetsList)
+	assetsPrices, err := s.priceProvider.GetMultiplePrices(assetsList)
 	if err != nil {
 		return nil, err
 	}
 
 	loan.CurrentLtv = helper.GetLoanCurrentLtv(input.Supplies, input.Borrows, assetsPrices)
 
-	createdLoan, err := uc.loanRepository.Create(ctx, loan)
+	createdLoan, err := s.loanRepository.Create(ctx, loan)
 	if err != nil {
 		return nil, err
 	}

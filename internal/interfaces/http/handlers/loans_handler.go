@@ -30,23 +30,23 @@ func (h *LoansHandler) GetAllLoans(c *gin.Context) {
 	c.JSON(http.StatusOK, loans)
 }
 
-// func (h *AlertsHandler) UpdateAlert(c *gin.Context) {
-// 	alertID := c.Param("id")
-// 	var input dto.UpdatePriceAlertInput
+func (h *LoansHandler) UpdateLoan(c *gin.Context) {
+	loanID := c.Param("id")
+	var input dto.UpdateLoanInput
 
-// 	if err := c.ShouldBindJSON(&input); err != nil {
-// 		c.JSON(400, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	alert, err := h.alertsService.UpdateAlert(alertID, input)
-// 	if err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	loan, err := h.loansService.UpdateLoan(loanID, input)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, alert)
-// }
+	c.JSON(http.StatusOK, loan)
+}
 
 func (h *LoansHandler) CreateLoan(c *gin.Context) {
 	var input dto.CreateLoanInput
