@@ -12,6 +12,7 @@ type RoutesComposer struct {
 	LoginRoutes  *routes.LoginRoutes
 	LoansRoutes  *routes.LoansRoutes
 	PoolsRoutes  *routes.PoolsRoutes
+	BillsRoutes  *routes.BillsRoutes
 }
 
 type HandlerComposer struct {
@@ -19,6 +20,7 @@ type HandlerComposer struct {
 	LoginHandler  *handlers.LoginHandler
 	LoansHandler  *handlers.LoansHandler
 	PoolsHandler  *handlers.PoolsHandler
+	BillsHandler  *handlers.BillsHandler
 }
 
 func NewHandlerComposer(services *ServicesComposer) *HandlerComposer {
@@ -27,6 +29,7 @@ func NewHandlerComposer(services *ServicesComposer) *HandlerComposer {
 		LoginHandler:  handlers.NewLoginHandler(services.AuthService),
 		LoansHandler:  handlers.NewLoansHandler(services.LoansService),
 		PoolsHandler:  handlers.NewPoolsHandler(services.PoolsService),
+		BillsHandler:  handlers.NewBillsHandler(services.BillsService),
 	}
 }
 
@@ -36,6 +39,7 @@ func NewRoutesComposer(handlers *HandlerComposer) *RoutesComposer {
 		LoginRoutes:  routes.NewLoginRoutes(handlers.LoginHandler),
 		LoansRoutes:  routes.NewLoansRoutes(handlers.LoansHandler),
 		PoolsRoutes:  routes.NewPoolsRoutes(handlers.PoolsHandler),
+		BillsRoutes:  routes.NewBillsRoutes(handlers.BillsHandler),
 	}
 }
 
@@ -50,4 +54,5 @@ func (rc *RoutesComposer) RegisterRoutes(engine *gin.Engine, userToken string) {
 	rc.AlertsRoutes.StartAlertsRoutes(engine, authMiddleware)
 	rc.LoansRoutes.StartLoansRoutes(engine, authMiddleware)
 	rc.PoolsRoutes.StartPoolsRoutes(engine, authMiddleware)
+	rc.BillsRoutes.StartBillsRoutes(engine, authMiddleware)
 }

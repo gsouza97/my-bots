@@ -7,6 +7,7 @@ type ServicesComposer struct {
 	LoansService  *services.LoansService
 	PoolsService  *services.PoolsService
 	AuthService   *services.AuthService
+	BillsService  *services.BillsService
 }
 
 func NewServicesComposer(
@@ -19,5 +20,6 @@ func NewServicesComposer(
 		LoansService:  services.NewLoansService(repos.LoanRepository, providers.BinancePriceProvider),
 		PoolsService:  services.NewPoolsService(repos.PoolRepository, providers.BinancePriceProvider),
 		AuthService:   services.NewAuthService(repos.UserRepository, cfg.UserToken),
+		BillsService:  services.NewBillsService(repos.BillRepository),
 	}
 }
