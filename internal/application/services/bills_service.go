@@ -2,9 +2,12 @@ package services
 
 import (
 	"context"
+	"time"
 
+	"github.com/gsouza97/my-bots/internal/application/dto"
 	"github.com/gsouza97/my-bots/internal/domain"
 	"github.com/gsouza97/my-bots/internal/infrastructure/repository"
+	"github.com/gsouza97/my-bots/internal/logger"
 )
 
 type BillsService struct {
@@ -46,34 +49,31 @@ func (s *BillsService) GetAll() ([]*domain.Bill, error) {
 // 	return alert, nil
 // }
 
-// func (uc *BillsService) CreateAlert(input dto.CreatePriceAlertInput) (*domain.PriceAlert, error) {
-// 	ctx := context.Background()
+func (uc *BillsService) CreateBill(input dto.CreateBillInput) (*domain.Bill, error) {
+	ctx := context.Background()
 
-// 	alert := &domain.PriceAlert{
-// 		Crypto:     input.Crypto,
-// 		AlertPrice: input.AlertPrice,
-// 		Active:     true,
-// 	}
+	parsedPurchaseDate, err := time.Parse("2006-01-02", input.PurchaseDate)
+	logger.Log.Infof("Parsed purchase date: %v", parsedPurchaseDate)
+	if err != nil {
+		return nil, err
+	}
 
-// 	price, err := uc.priceProvider.GetPrice(alert.Crypto)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	bill := &domain.Bill{
+		Description:  input.Description,
+		Amount:       input.Amount,
+		Category:     input.Category,
+		PurchaseDate: parsedPurchaseDate,
+	}
 
-// 	alert.PriceStatus = domain.UnderPrice
-// 	if price >= alert.AlertPrice {
-// 		alert.PriceStatus = domain.OverPrice
-// 	}
+	createdBill, err := uc.billRepository.Save(ctx, bill)
+	if err != nil {
+		return nil, err
+	}
 
-// 	createdAlert, err := uc.priceAlertRepository.Create(ctx, alert)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	logger.Log.Infof("Bill created: %+v", createdBill)
 
-// 	logger.Log.Infof("Alert created: %+v", createdAlert)
-
-// 	return createdAlert, nil
-// }
+	return createdBill, nil
+}
 
 // func (s *BillsService) DeleteAlert(id string) error {
 // 	ctx := context.Background()

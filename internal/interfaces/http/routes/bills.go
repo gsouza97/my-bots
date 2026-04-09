@@ -17,4 +17,5 @@ func NewBillsRoutes(billsHandler *handlers.BillsHandler) *BillsRoutes {
 
 func (rt *BillsRoutes) StartBillsRoutes(r *gin.Engine, middleware ...gin.HandlerFunc) {
 	r.GET("/bills", append(middleware, rt.billsHandler.GetAllBills)...)
+	r.POST("/bills", append(middleware, rt.billsHandler.CreateBill)...)
 }
