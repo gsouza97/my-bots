@@ -31,23 +31,28 @@ func (s *BillsService) GetAll() ([]*domain.Bill, error) {
 	return bills, nil
 }
 
-// func (s *BillsService) UpdateAlert(id string, input dto.UpdatePriceAlertInput) (*domain.PriceAlert, error) {
-// 	ctx := context.Background()
-// 	alert, err := s.priceAlertRepository.FindById(ctx, id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (s *BillsService) UpdateBill(id string, input dto.UpdateBillInput) (*domain.Bill, error) {
+	ctx := context.Background()
+	bill, err := s.billRepository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
-// 	alert.Crypto = input.Crypto
-// 	alert.AlertPrice = input.AlertPrice
+	bill.Description = input.Description
+	bill.Amount = input.Amount
+	bill.Category = input.Category
+	bill.PurchaseDate, err = time.Parse("2006-01-02", input.PurchaseDate)
+	if err != nil {
+		return nil, err
+	}
 
-// 	err = s.priceAlertRepository.Update(ctx, alert)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	err = s.billRepository.Update(ctx, bill)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return alert, nil
-// }
+	return bill, nil
+}
 
 func (uc *BillsService) CreateBill(input dto.CreateBillInput) (*domain.Bill, error) {
 	ctx := context.Background()

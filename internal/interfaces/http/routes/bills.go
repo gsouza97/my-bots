@@ -19,4 +19,5 @@ func (rt *BillsRoutes) StartBillsRoutes(r *gin.Engine, middleware ...gin.Handler
 	r.GET("/bills", append(middleware, rt.billsHandler.GetAllBills)...)
 	r.POST("/bills", append(middleware, rt.billsHandler.CreateBill)...)
 	r.DELETE("/bills/:id", append(middleware, rt.billsHandler.DeleteBill)...)
+	r.PATCH("/bills/:id", append(middleware, rt.billsHandler.UpdateBill)...)
 }

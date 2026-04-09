@@ -30,23 +30,23 @@ func (h *BillsHandler) GetAllBills(c *gin.Context) {
 	c.JSON(http.StatusOK, bills)
 }
 
-// func (h *AlertsHandler) UpdateAlert(c *gin.Context) {
-// 	alertID := c.Param("id")
-// 	var input dto.UpdatePriceAlertInput
+func (h *BillsHandler) UpdateBill(c *gin.Context) {
+	billID := c.Param("id")
+	var input dto.UpdateBillInput
 
-// 	if err := c.ShouldBindJSON(&input); err != nil {
-// 		c.JSON(400, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	alert, err := h.alertsService.UpdateAlert(alertID, input)
-// 	if err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	bill, err := h.billsService.UpdateBill(billID, input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, alert)
-// }
+	c.JSON(http.StatusOK, bill)
+}
 
 func (h *BillsHandler) CreateBill(c *gin.Context) {
 	var input dto.CreateBillInput

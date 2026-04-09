@@ -17,6 +17,7 @@ type BillRepository interface {
 	FindByMonth(ctx context.Context, month time.Month) ([]*domain.Bill, error)
 	FindByPurchaseDateBetween(ctx context.Context, startDate time.Time, endDate time.Time) ([]*domain.Bill, error)
 	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, bill *domain.Bill) error
 }
 
 type billRepository struct {
@@ -131,5 +132,14 @@ func (r *billRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": objectID})
+	return err
+}
+
+func (r *billRepository) Update(ctx context.Context, bill *domain.Bill) error {
+	if bill.ID.IsZero() {
+		return mongo.ErrNilDocument
+	}
+
+	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": bill.ID}, bson.M{"$set": bill})
 	return err
 }
