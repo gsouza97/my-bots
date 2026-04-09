@@ -75,7 +75,7 @@ func (uc *BillsService) CreateBill(input dto.CreateBillInput) (*domain.Bill, err
 	return createdBill, nil
 }
 
-// func (s *BillsService) DeleteAlert(id string) error {
-// 	ctx := context.Background()
-// 	return s.priceAlertRepository.Delete(ctx, id)
-// }
+func (s *BillsService) DeleteBill(id string) error {
+	ctx := context.Background()
+	return s.billRepository.Delete(ctx, id)
+}

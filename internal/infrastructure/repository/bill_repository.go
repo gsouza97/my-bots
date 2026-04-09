@@ -16,6 +16,7 @@ type BillRepository interface {
 	FindAll(ctx context.Context) ([]*domain.Bill, error)
 	FindByMonth(ctx context.Context, month time.Month) ([]*domain.Bill, error)
 	FindByPurchaseDateBetween(ctx context.Context, startDate time.Time, endDate time.Time) ([]*domain.Bill, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type billRepository struct {
@@ -121,4 +122,14 @@ func (r *billRepository) FindByMonth(ctx context.Context, month time.Month) ([]*
 	endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Nanosecond)
 
 	return r.FindByPurchaseDateBetween(ctx, startOfMonth, endOfMonth)
+}
+
+func (r *billRepository) Delete(ctx context.Context, id string) error {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": objectID})
+	return err
 }

@@ -66,15 +66,15 @@ func (h *BillsHandler) CreateBill(c *gin.Context) {
 	c.JSON(http.StatusCreated, bill)
 }
 
-// func (h *AlertsHandler) DeleteAlert(c *gin.Context) {
-// 	alertID := c.Param("id")
+func (h *BillsHandler) DeleteBill(c *gin.Context) {
+	billID := c.Param("id")
 
-// 	err := h.alertsService.DeleteAlert(alertID)
-// 	if err != nil {
-// 		logger.Log.Errorf("Error deleting alert:", err)
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	err := h.billsService.DeleteBill(billID)
+	if err != nil {
+		logger.Log.Errorf("Error deleting bill:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{"message": "Alert deleted successfully"})
-// }
+	c.JSON(http.StatusOK, gin.H{"message": "Bill deleted successfully"})
+}
