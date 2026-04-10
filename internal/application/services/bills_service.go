@@ -41,7 +41,7 @@ func (s *BillsService) UpdateBill(id string, input dto.UpdateBillInput) (*domain
 	bill.Description = input.Description
 	bill.Amount = input.Amount
 	bill.Category = input.Category
-	bill.PurchaseDate, err = time.Parse("2006-01-02", input.PurchaseDate)
+	bill.PurchaseDate, err = time.Parse(time.RFC3339, input.PurchaseDate)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s *BillsService) UpdateBill(id string, input dto.UpdateBillInput) (*domain
 func (uc *BillsService) CreateBill(input dto.CreateBillInput) (*domain.Bill, error) {
 	ctx := context.Background()
 
-	parsedPurchaseDate, err := time.Parse("2006-01-02", input.PurchaseDate)
+	parsedPurchaseDate, err := time.Parse(time.RFC3339, input.PurchaseDate)
 	logger.Log.Infof("Parsed purchase date: %v", parsedPurchaseDate)
 	if err != nil {
 		return nil, err
